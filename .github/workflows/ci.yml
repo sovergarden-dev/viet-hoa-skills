@@ -27,7 +27,15 @@ jobs:
 
       - name: Run Core I/O & Invariant Unit Tests
         run: |
-          python tools/tests/test_hermes_io.py
+          python -m unittest discover -s tools/tests -p "test_*.py"
+
+      - name: Run Viethoa & Anti-Domestication Unit Tests
+        run: |
+          python -m unittest discover -s skills/viethoa/scripts/tests -p "test_*.py"
+
+      - name: Run FontTV Custom Encoding Audit Tests
+        run: |
+          python skills/fonttv/scripts/tests/test_custom_encoding_audit.py
 
       - name: Lint viethoa Skill Package
         run: |
