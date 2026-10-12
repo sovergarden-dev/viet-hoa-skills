@@ -1,5 +1,9 @@
 # viet-hoa-skills
 
+[![CI](https://github.com/sovergarden-dev/viet-hoa-skills/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/sovergarden-dev/viet-hoa-skills/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/sovergarden-dev/viet-hoa-skills)](https://github.com/sovergarden-dev/viet-hoa-skills/releases)
+[![License](https://img.shields.io/github/license/sovergarden-dev/viet-hoa-skills)](https://github.com/sovergarden-dev/viet-hoa-skills/blob/main/LICENSE)
+
 **Bộ công cụ Việt hóa game chuẩn nguyên tác (Source-Faithful Translation, Anti-Domestication) cho Hermes Agent**
 
 Kho lưu trữ này chứa bộ 5 kỹ năng (skills) chuyên nghiệp, tự động hóa toàn diện quy trình chuyển ngữ và phát hành bản vá tiếng Việt cho các trò chơi trên PC (Steam / GOG / Epic) vận hành trên các engine phổ biến (Unity, Unreal Engine, Adobe AIR, Ren'Py, GameMaker, Telltale Tool).
