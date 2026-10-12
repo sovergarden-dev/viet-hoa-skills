@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **P0 Blockers: 0**.
 - **Audited & Approved:** Formally certified under Notion AI Red Team Round 4 verdict `SY07-R4-T6-PCDK-20261012-1BBC`.
 
-## [1.1.0-rc.2] - 2026-10-12
+## [1.1.1-rc.1] - 2026-10-12
 
 ### Fixed
 - **viethoa**: Nâng cấp lõi `scripts/pronoun_validator.py` sang kiến trúc Token-Window Standalone Occurrence Matching (`find_standalone_occurrences`), giải quyết triệt để vấn đề over-suppression và false positives trên các cụm từ quan hệ thân tộc.
