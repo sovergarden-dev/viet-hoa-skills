@@ -1,0 +1,24 @@
+{
+  "schema": "agy-semantic-origin-authorization/v3",
+  "contract": "AGY-VIETHOA-HANDOFF/2.5-TWO-PHASE-DRAFT12-PREVIEW-FINAL0-GUARDED",
+  "phase": "<phase1_parallel_draft|phase2_main_only_final>",
+  "package_id": "<exact-package-id>",
+  "run_id": "<exact-run-id>",
+  "manifest_sha256": "<64-hex-manifest-hash>",
+  "package_root": "<absolute-extracted-package-root>",
+  "work_root": "<absolute-sibling-work-root>",
+  "controller": {
+    "path": "<absolute-pinned-controller-path>",
+    "sha256": "<64-hex-controller-hash>"
+  },
+  "schedule": {
+    "path": "<absolute-pinned-phase-schedule-path>",
+    "sha256": "<64-hex-schedule-hash>"
+  },
+  "challenge_overlay": null,
+  "current_prompt_path": "<absolute-work-root>/current/prompt.json",
+  "current_response_path": "<absolute-work-root>/current/response.json",
+  "response_schema": "<agy-phase1-draft/v2|agy-explicit-review/v2>",
+  "allowed_run_commands": [],
+  "challenge_ids_by_batch": {}
+}

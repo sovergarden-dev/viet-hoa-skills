@@ -1,0 +1,28 @@
+{
+  "contract_version": "1.0.0",
+  "schema_version": 1,
+  "project": "<GameName>",
+  "batch_id": "<batch-id>",
+  "packet_id": "packet-0001",
+  "attempt": 1,
+  "lease_id": "<uuid>",
+  "phase": "phase1_bulk",
+  "parent_phase_sha256": "<phase0-acceptance-sha256-or-null-when-phase0-not-required>",
+  "input_payload_sha256": "",
+  "source_snapshot_sha256": "",
+  "english_policy_sha256": "",
+  "glossary_sha256": "",
+  "token_profile_sha256": "",
+  "ordered_full_key_sha256": "",
+  "row_count": 0,
+  "action_counts": {},
+  "unresolved_handoff_ids": [],
+  "output": {
+    "filename": "translated_packet-0001.csv",
+    "row_count": 0,
+    "ordered_full_key_sha256": "",
+    "sha256": ""
+  },
+  "validator_version": "",
+  "status": "phase_output_pending_hermes_acceptance"
+}

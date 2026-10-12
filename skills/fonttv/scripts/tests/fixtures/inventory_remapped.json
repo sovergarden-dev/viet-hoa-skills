@@ -1,0 +1,45 @@
+{
+  "schema": "fonttv/font-inventory/v1",
+  "font": "fixture-B-remapped.font",
+  "sha256": "db93d5a7e4653eeebaef46def356744f755003901dcb060d8d4f0a5078545eb6",
+  "adapter": {
+    "name": "fixture",
+    "version": "test-2",
+    "supported": true,
+    "capabilities": [
+      "records",
+      "glyph_identity",
+      "ink",
+      "uv",
+      "metrics"
+    ],
+    "input_sha256": "db93d5a7e4653eeebaef46def356744f755003901dcb060d8d4f0a5078545eb6",
+    "inventory_method": "hand-written test fixture describing the fixture font bytes",
+    "native_encoding": {
+      "name": "cp1252",
+      "resolver": "record id decoded as a cp1252 byte"
+    }
+  },
+  "evidence": [
+    {
+      "id": "build-manifest",
+      "type": "build_manifest",
+      "path": "fixture-B-build-manifest.json",
+      "sha256": "7480716ac8d23c4cdbb445f3e61d8abb06b704ec0deb5115b8b0cdb55d95933d"
+    }
+  ],
+  "lookup": "binary_search",
+  "records": [
+    {"id": 32, "glyph_identity": " ", "identity_source": ["native_encoding"], "uv": [0.0, 0.0, 0.0, 0.0], "x_advance": 12},
+    {"id": 68, "glyph_identity": "D", "identity_source": ["native_encoding"], "uv": [0.1, 0.1, 0.16, 0.18], "ink_pixels": 380, "x_advance": 34},
+    {"id": 97, "glyph_identity": "a", "identity_source": ["native_encoding"], "uv": [0.2, 0.1, 0.25, 0.18], "ink_pixels": 300, "x_advance": 26},
+    {"id": 100, "glyph_identity": "d", "identity_source": ["native_encoding"], "uv": [0.3, 0.1, 0.35, 0.18], "ink_pixels": 320, "x_advance": 30},
+    {"id": 101, "glyph_identity": "e", "identity_source": ["native_encoding"], "uv": [0.4, 0.1, 0.45, 0.18], "ink_pixels": 290, "x_advance": 26},
+    {"id": 117, "glyph_identity": "u", "identity_source": ["native_encoding"], "uv": [0.5, 0.1, 0.55, 0.18], "ink_pixels": 280, "x_advance": 27},
+    {"id": 143, "glyph_identity": "ệ", "identity_source": ["build_manifest"], "uv": [0.1, 0.5, 0.15, 0.62], "ink_pixels": 352, "x_advance": 28, "identity_evidence": ["build-manifest"]},
+    {"id": 155, "glyph_identity": "ư", "identity_source": ["build_manifest"], "uv": [0.2, 0.5, 0.26, 0.6], "ink_pixels": 318, "x_advance": 30, "identity_evidence": ["build-manifest"]},
+    {"id": 167, "glyph_identity": "ạ", "identity_source": ["build_manifest"], "uv": [0.3, 0.5, 0.35, 0.62], "ink_pixels": 322, "x_advance": 27, "identity_evidence": ["build-manifest"]},
+    {"id": 178, "glyph_identity": "đ", "identity_source": ["build_manifest"], "uv": [0.4, 0.5, 0.46, 0.6], "ink_pixels": 344, "x_advance": 32, "identity_evidence": ["build-manifest"]},
+    {"id": 255, "glyph_identity": "Đ", "identity_source": ["build_manifest"], "uv": [0.5, 0.5, 0.57, 0.6], "ink_pixels": 402, "x_advance": 36, "identity_evidence": ["build-manifest"]}
+  ]
+}

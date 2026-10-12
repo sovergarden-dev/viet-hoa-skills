@@ -1,0 +1,13 @@
+{
+  "schema": "fonttv/encoding-map/v1",
+  "name": "<table name and version, e.g. project single-byte table v3>",
+  "normalization": "NFC",
+  "passthrough": "ascii_printable",
+  "compose_policy": "precomposed",
+  "id_max": 255,
+  "entries": [
+    {"char": "đ", "id": 178},
+    {"codepoint": "U+0110", "id": "0xFF"},
+    {"char": "á", "ids": [97, 249], "glyphs": ["a", "\u0301"]}
+  ]
+}

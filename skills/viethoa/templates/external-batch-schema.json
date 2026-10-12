@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "format": "csv",
+  "encoding": "utf-8-sig",
+  "columns": [
+    "handoff_id",
+    "domain",
+    "key",
+    "content_type",
+    "speaker",
+    "addressee",
+    "source",
+    "reference",
+    "previous_context",
+    "following_context",
+    "protected_tokens",
+    "character_limit",
+    "semantic_class",
+    "translation_policy",
+    "locked_english_terms",
+    "identity_expected",
+    "community_vi_reference",
+    "work_route",
+    "current_translation_vi"
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "schema": "fonttv/manifest/v1",
+  "project": "<game-or-app>",
+  "status": "DRAFT",
+  "claimed_proof_level": null,
+  "route": "B_custom_encoding",
+  "build": {
+    "root": "<relative install root>",
+    "executable": "<exe name>",
+    "build_id": "<store build id / version>",
+    "engine": "<engine + version>",
+    "platform": "windows",
+    "locale": "vi",
+    "cache_state": "cold"
+  },
+  "rights": {
+    "modification": "unverified",
+    "redistribution": "unverified",
+    "evidence": "LICENSE_AUDIT.md",
+    "evidence_sha256": null,
+    "donors": []
+  },
+  "encoding": {
+    "mode": "engine_single_byte",
+    "mapping_source": "<relative path to the encoder table actually used by the text pipeline>",
+    "mapping_sha256": null,
+    "adapter_path": "<relative path of the hash-pinned parser; proof_level_check re-executes it>",
+    "adapter_sha256": null,
+    "identity_evidence": [
+      {"type": "build_manifest", "path": "<relative glyph-evidence file>", "sha256": null}
+    ],
+    "normalization": "NFC",
+    "encoder": "<script/tool that writes the game text>",
+    "encoder_sha256": null
+  },
+  "fonts": [
+    {
+      "name": "<font file>",
+      "consumer": "<menu/dialog/subtitle/nameplate that draws with it>",
+      "route": "B_custom_encoding",
+      "strategy": "P1_replace",
+      "glyph_source": {
+        "path": "<P1: source TTF/OTF | P2: donor for marks>",
+        "sha256": null,
+        "license": "<OFL-1.1 | Apache-2.0 | proprietary-local-only>",
+        "license_evidence": null,
+        "scale_rule": "<P1: cap-height match to original 'H' ink>"
+      },
+      "engine_shapes": false,
+      "input_sha256": null,
+      "output_sha256": null,
+      "output_path": "<relative staging path of the built font>",
+      "change": "remapped",
+      "semantic_audit": {
+        "corpus_path": null,
+        "corpus_sha256": null,
+        "encoded_path": null,
+        "encoded_sha256": null,
+        "allowlist_path": null,
+        "allowlist_sha256": null,
+        "generated_inventory_path": null,
+        "generated_inventory_sha256": null
+      },
+      "allowlisted_changes": [
+        {"id": null, "field": "<glyph|uv|x_advance|height|y_offset>", "reason": "<why this record changes>"}
+      ],
+      "gates": [
+        {"gate": "coverage", "status": "NOT_RUN", "tool": "custom_encoding_audit.py", "report": null, "report_sha256": null, "font_sha256": null},
+        {"gate": "semantic_mapping", "status": "NOT_RUN", "tool": "custom_encoding_audit.py --font-file <output_path> (report must show binding_status PASS)", "report": null, "report_sha256": null, "font_sha256": null, "mapping_sha256": null},
+        {"gate": "outline_ink", "status": "NOT_RUN", "tool": "custom_encoding_audit.py", "report": null, "report_sha256": null, "font_sha256": null},
+        {"gate": "metrics", "status": "NOT_RUN", "tool": "custom_encoding_audit.py", "report": null, "report_sha256": null, "font_sha256": null,
+         "reason": null, "approved_by": null, "approver_type": "human", "scope": null},
+        {"gate": "shaping", "status": "NOT_APPLICABLE", "reason": "engine has no OpenType shaper", "font_sha256": null},
+        {"gate": "structural_validator", "status": "NOT_RUN", "tool": "<format adapter re-parse / OTS>", "report": null, "report_sha256": null, "font_sha256": null},
+        {"gate": "preservation_diff", "status": "NOT_RUN", "tool": "<semantic diff before/after>", "report": null, "report_sha256": null, "font_sha256": null}
+      ],
+      "archive": {
+        "container": "<archive/bundle/pak that the game loads>",
+        "injector": "<tool + config that packed it>",
+        "readback_method": "<extract from the live container after install>",
+        "readback_path": "<relative path of the font file extracted back from the live container>",
+        "readback_sha256": null,
+        "container_path": null,
+        "container_sha256_before": null,
+        "container_sha256_after": null
+      },
+      "runtime": {
+        "build_id": null,
+        "checkpoint": "<save/menu/scene where the consumer is visible>",
+        "screenshots": [
+          {"path": null, "sha256": null, "font_sha256": null}
+        ],
+        "reviewer_type": "human",
+        "reviewer": null,
+        "verdict": "NOT_RUN"
+      }
+    }
+  ],
+  "release": {
+    "clean_install": {"status": "NOT_RUN", "report": null, "report_sha256": null},
+    "rollback": {"status": "NOT_RUN", "report": null, "report_sha256": null},
+    "signoff": [
+      {"role": "vietnamese_reader", "reviewer_type": "human", "name": null, "sha256": [], "record": null, "record_sha256": null, "at": null},
+      {"role": "typography_reviewer", "reviewer_type": "human", "name": null, "sha256": [], "record": null, "record_sha256": null, "at": null}
+    ]
+  }
+}

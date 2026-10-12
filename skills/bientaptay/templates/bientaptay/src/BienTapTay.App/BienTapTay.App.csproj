@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>BienTapTay</AssemblyName>
+    <RootNamespace>BienTapTay.App</RootNamespace>
+    <ApplicationIcon></ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BienTapTay.Core\BienTapTay.Core.csproj" />
+  </ItemGroup>
+</Project>

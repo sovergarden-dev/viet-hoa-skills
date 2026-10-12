@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "viethoa/canonical-editor-handoff/v2",
+  "title": "Multi-table canonical editor handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "project_id", "editor_identity", "files", "aggregate_key_set_sha256"],
+  "properties": {
+    "schema": { "const": "viethoa/canonical-editor-handoff/v2" },
+    "project_id": { "type": "string", "minLength": 1 },
+    "editor_identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["identity_columns", "stable_key_scope"],
+      "properties": {
+        "identity_columns": { "const": ["translation_id", "domain", "key"] },
+        "stable_key_scope": { "const": "(translation_id,domain,key)" }
+      }
+    },
+    "files": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["translation_id", "path", "domain", "mapping", "sha256", "row_count", "key_set_sha256"],
+        "properties": {
+          "translation_id": { "type": "string", "minLength": 1 },
+          "path": { "type": "string", "minLength": 1 },
+          "domain": { "type": "string", "minLength": 1 },
+          "mapping": {
+            "type": "object", "additionalProperties": false,
+            "required": ["key_column", "source_column", "target_column", "state_column"],
+            "properties": {
+              "key_column": {"type": "string", "minLength": 1},
+              "source_column": {"type": "string", "minLength": 1},
+              "target_column": {"type": "string", "minLength": 1},
+              "state_column": {"type": "string", "minLength": 1},
+              "notes_column": {"type": "string", "minLength": 1},
+              "speaker_column": {"type": "string", "minLength": 1},
+              "group_column": {"type": "string", "minLength": 1},
+              "protected_tokens_column": {"type": "string", "minLength": 1},
+              "reference_columns": {"type": "array", "uniqueItems": true,
+                "items": {"type": "string", "minLength": 1}}
+            }
+          },
+          "editor_policy": {
+            "type": "object", "additionalProperties": false,
+            "required": ["token_pattern"],
+            "properties": {"token_pattern": {"type": "string", "minLength": 1}}
+          },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "row_count": { "type": "integer", "minimum": 1 },
+          "key_set_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "label", "path", "key_column", "sha256", "row_count"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "label": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "key_column": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "row_count": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "aggregate_key_set_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  }
+}

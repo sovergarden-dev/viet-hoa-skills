@@ -1,0 +1,36 @@
+{
+  "schema": "agy-phase2-recheck-schedule/v1",
+  "package_id": "<same-phase2-package-id>",
+  "run_id": "<same-phase2-run-id>",
+  "phase": "phase2_main_only_final",
+  "parent_full_pass": {
+    "path": "<absolute-host-private-promoted-full-pass-csv>",
+    "sha256": "<64-hex-exact-promoted-full-pass-csv-hash>",
+    "row_count": 0
+  },
+  "challenge_policy": {
+    "min_percent_per_packet": 5,
+    "min_slots_per_packet": 1,
+    "actual_rows_host_private": true
+  },
+  "recheck_policy": {
+    "all_rewritten": true,
+    "all_runtime_flagged": true,
+    "all_high_risk": true,
+    "accepted_sample_min_percent": 10,
+    "accepted_sample_method": "stratified_deterministic",
+    "accepted_sample_strata_fields": ["domain", "content_class", "translation_policy"],
+    "fresh_prompts_hide_prior_decision": true
+  },
+  "selection": {
+    "rewritten_handoff_ids": [],
+    "runtime_handoff_ids": [],
+    "high_risk_handoff_ids": [],
+    "accepted_sample_handoff_ids": [],
+    "selected_handoff_ids": [],
+    "selected_handoff_ids_sha256": "<64-hex-canonical-selected-id-list-hash>",
+    "accepted_real_count": 0,
+    "accepted_sample_minimum": 0
+  },
+  "packets": []
+}

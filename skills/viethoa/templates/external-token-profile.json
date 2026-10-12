@@ -1,0 +1,30 @@
+{
+  "token_profile_id": "generic_tags-v1",
+  "schema_version": 1,
+  "description": "Starter profile; replace or extend with tested project syntax before dispatch.",
+  "extractors": ["brace", "printf", "rich_text", "escaped_controls"],
+  "compare": {
+    "multiset": true,
+    "order": false,
+    "nesting": true,
+    "literal_newlines": true,
+    "physical_newlines": true
+  },
+  "known_rich_text_tags": ["b", "i", "u", "color", "size", "br"],
+  "printf_requires_no_whitespace_after_percent": true,
+  "test_vectors": [
+    {
+      "text": "Use {player} <b>%02d</b>\\n",
+      "tokens": ["{player}", "<b>", "%02d", "</b>", "\\n"]
+    },
+    {
+      "text": "Gain 10% for accuracy",
+      "tokens": []
+    },
+    {
+      "text": "<color=#FF0000>Text</color>",
+      "tokens": ["<color=#FF0000>", "</color>"]
+    }
+  ],
+  "project_test_vectors_sha256": "bf3eca5d79be8237c2445bf7ce22bef324560c80f64ff88b3d38cb1dbecfa763"
+}

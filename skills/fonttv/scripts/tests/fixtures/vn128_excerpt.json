@@ -1,0 +1,15 @@
+{
+  "schema": "fonttv/encoding-map/v1",
+  "name": "VN-128 excerpt (TWAU case study; five documented slots only)",
+  "normalization": "NFC",
+  "passthrough": "ascii_printable",
+  "compose_policy": "precomposed",
+  "id_max": 255,
+  "entries": [
+    {"char": "đ", "id": 178},
+    {"char": "Đ", "id": 255},
+    {"char": "ệ", "id": 143},
+    {"char": "ư", "id": 155},
+    {"char": "ạ", "id": 167}
+  ]
+}

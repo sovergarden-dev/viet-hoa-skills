@@ -1,0 +1,30 @@
+{
+  "schema": "fonttv/strategy-decisions/v1",
+  "project": "<game>",
+  "decided_by": "<who>",
+  "at": "<iso8601>",
+  "default_strategy": "P1_replace",
+  "consumers": [
+    {
+      "font": "<font file>",
+      "consumer": "<screen or UI element that draws with it>",
+      "consumer_evidence": "<member that names the font | runtime screenshot | unproven>",
+      "strategy": "P1_replace",
+      "glyph_source": "<source font + license + sha256>",
+      "why": "<one line: why this strategy for this consumer>"
+    },
+    {
+      "font": "<font file>",
+      "consumer": "<screen>",
+      "consumer_evidence": "unproven",
+      "strategy": "P2_compose",
+      "glyph_source": "<donor + sha256>",
+      "why": "the original style matters here and the longer QA is accepted",
+      "review_budget": "<how many runtime rounds before switching to P1>"
+    }
+  ],
+  "notes": [
+    "A font whose consumer stays 'unproven' cannot be granted runtime_verified from a screenshot.",
+    "Several fonts sharing one source design are proven by a single screenshot, not one each."
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "fonttv/glyph-evidence/v1",
+  "type": "build_manifest",
+  "font_sha256": "<sha256 of the font bytes this evidence describes; must equal the audited --font-file>",
+  "producer": "<pipeline step / reviewer / diff tool that wrote this file>",
+  "slots": {
+    "178": "đ",
+    "255": "Đ"
+  }
+}

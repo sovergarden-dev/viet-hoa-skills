@@ -1,0 +1,31 @@
+{
+  "schema": "viethoa-name-provenance-policy/v1",
+  "project": "<GameName>",
+  "project_origin_country": "<country>",
+  "primary_authorial_language": "<BCP-47 language tag>",
+  "origin_evidence": [
+    {
+      "kind": "creator_or_original_market_primary_source",
+      "locator": "<URL or workspace evidence path>",
+      "note": "<why this establishes the game's origin and authorial language>"
+    }
+  ],
+  "default_name_rule": "creator_or_original_market_canonical_form",
+  "english_localization_role": "reference_only_not_name_authority",
+  "romanization": {
+    "authoritative_precedence": [
+      "creator-published Latin form",
+      "original-market official source",
+      "documented national/project standard"
+    ],
+    "rules": [
+      {
+        "language": "<language tag>",
+        "standard": "<creator official form or named standard>",
+        "notes": "<scope and exceptions>"
+      }
+    ]
+  },
+  "ledger_path": "name-provenance-ledger.csv",
+  "audit_status": "not_started"
+}

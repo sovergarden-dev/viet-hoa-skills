@@ -1,0 +1,46 @@
+{
+  "schema": "fonttv/font-inventory/v1",
+  "font": "<font file name; must equal the --font-file basename>",
+  "source_path": "<optional path the adapter read; basename must match too>",
+  "sha256": "<sha256 of the exact font bytes; custom_encoding_audit.py re-hashes --font-file and compares>",
+  "adapter": {
+    "name": "<project-local adapter>",
+    "version": "<adapter version, non-empty>",
+    "supported": true,
+    "reason": null,
+    "capabilities": ["records", "glyph_identity", "ink", "uv", "metrics"],
+    "input_sha256": "<sha256 the adapter computed over the bytes it parsed; must equal sha256>",
+    "inventory_method": "<how records were extracted, e.g. parsed TRectNew + decoded DXT5 page>",
+    "native_encoding": {
+      "name": "<Python single-byte codec the original font was built for, e.g. cp1252>",
+      "table_evidence": null,
+      "resolver": "<how an id becomes a character, e.g. id decoded as a cp1252 byte>"
+    }
+  },
+  "evidence": [
+    {"id": "build-manifest", "type": "build_manifest", "path": "<relative to --evidence-root>", "sha256": "<sha256 of that file>"}
+  ],
+  "lookup": "binary_search",
+  "records": [
+    {
+      "id": 178,
+      "glyph_identity": "đ",
+      "identity_source": ["build_manifest"],
+      "identity_evidence": ["build-manifest"],
+      "uv": [0.40, 0.50, 0.46, 0.60],
+      "page": 0,
+      "ink_pixels": 344,
+      "ink_bbox": [3, 1, 29, 40],
+      "x_advance": 32,
+      "height": 76,
+      "y_offset": 0
+    },
+    {
+      "id": 100,
+      "glyph_identity": "d",
+      "identity_source": ["native_encoding"],
+      "ink_pixels": 320,
+      "x_advance": 30
+    }
+  ]
+}

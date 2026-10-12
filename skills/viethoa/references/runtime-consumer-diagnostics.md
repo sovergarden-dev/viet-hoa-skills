@@ -1,0 +1,28 @@
+# Diagnostic engine-specific
+
+Chỉ mở khi khớp engine/build. `fonttv` là owner hiện hành cho strategy, encoding, donor và proof; các kích thước/công thức sau là case evidence, không override contract đó. CFF conversion chỉ khi tool đích cần glyf, không bắt mọi .ufont đổi format.
+
+## 6. Font, UI và runtime QA
+
+1. Xác minh screenshot đúng process, executable, build và installed hashes.
+2. Phân biệt legacy UI, TMP, bitmap font, sprite/image; Unreal phân biệt `.locres`, DataTable và `.ufont`.
+3. **Quét toàn diện Font Dependency qua Asset Inventory (Không vá font cục bộ/chắp vá):** Không kết luận phạm vi font chỉ từ menu chính hoặc 1-2 màn hình đầu. Với Unreal/Unity, parse toàn bộ UI assets (`UI/**/*.uasset`, `Style*`, `TextBlockStyle`, `Font` classes) để liệt kê 100% font face được nạp, kiểm tra độ phủ bảng mã tiếng Việt trên toàn bộ danh mục font thực tế (Sans, Serif/Mincho, Handwriting/Brush, Monospace, Pixel, CJK fallback).
+4. **Quy tắc đồng bộ độ đậm nét (Stem-Width & Metric Matching Rule):** Khi bổ sung ký tự tiếng Việt từ donor font sang target font:
+   - **CẤM** chọn donor font có độ đậm (stem width / weight class) lệch xa target font (ví dụ: lấy font Gothic biển hiệu/tiêu đề siêu đậm stem ~1189 cho font thường stem ~325 gây lỗi chữ bôi đậm lồi lõm, từ ngữ "nửa thường nửa đậm" mất đồng bộ thị giác).
+   - Bắt buộc đo stem width, unitsPerEm, bbox và baseline của target và donor. Reject donor lệch visual weight. Không dùng ngưỡng stem `< 5%` như luật phổ quát; ghi bảng đo và confidence. Chi tiết donor nằm ở `fonttv`.
+5. **Xử lý OpenType/CFF outline trong Unreal ufont:** Font ufont chứa bảng `CFF ` (OpenType Type 1) không thể ghép trực tiếp bằng TTGlyphPen. Phải convert/decompose CFF outlines sang bảng TrueType (`glyf`) chuẩn trước khi nối glyphs và đóng gói ufont cho Unreal. Luật chung (CFF → TrueType là rebuild, phải regression ở pixel size thật) ở `fonttv/references/font-engineering-research.md`.
+6. **Serialized component không chứng minh live renderer.** Nếu pointer/font/material/style patch reload sạch nhưng runtime pixel-identical, rollback và instrument exact render boundary trước thử nghiệm tiếp. Với Adventure Creator, kiểm cả IMGUI `PlayerMenus.SetStyles → MenuLabel.Display → GUI.Label`; không suy TMP chỉ từ prefab `TextMeshProUGUI`.
+7. Audit corpus codepoints; kiểm glyph table/atlas/material/fallback/PPtr thật, không chỉ TTF cmap. Với IMGUI, font thật là `MenuElement.font`; TMP AssetBundle có thể chỉ expose legacy source qua `TMP_FontAsset.sourceFontFile`.
+8. Missing glyph khác missing sprite. Mọi font/artwork experiment phải reversible. Không chèn thử nghiệm vào `PreDisplay`/dialogue lifecycle vì exception có thể khóa hội thoại và input.
+9. Static TMP SDF dùng đúng Unity/TMP version. No-diacritic Vietnamese chỉ là chẩn đoán tạm.
+10. Sau khi speech runtime đạt, tìm exact visible item/UI/document strings để phát hiện **locale table riêng**; inventory và dịch toàn table có cấu trúc, không kết luận coverage từ speech corpus.
+11. **GameMaker Studio 1 font atlas:** `UndertaleFont.Glyph` không có `YOffset`; GameMaker luôn gióng đỉnh lát cắt texture (`SourceY`) vào đỉnh dòng (`Y = 0`). Không crop `min_y` khi nạp glyph mới; phải giữ `SourceY = cell_y` (đỉnh ô ký tự) và chiều cao cố định (14 cho chữ thường/hoa, 17 cho descender/dot below) để tránh lỗi bay baseline (superscript). Runner GameMaker dùng binary search trên mảng glyph theo mã `Character`: toàn bộ danh sách glyph bắt buộc phải sắp xếp tăng dần tuyệt đối theo mã ký tự Unicode; nếu nối vào cuối mảng, mọi ký tự có mã nhỏ hơn ký tự cuối danh sách gốc (ví dụ `Ă=258, ă=259, Đ=272, đ=273 < ž=382`) sẽ bị nuốt chửng hoàn toàn (dropped glyphs). Các font phụ (`recipefont*`) có thể chia sẻ chung texture item và mảng glyph với `dialogfont` để phủ 100% tiếng Việt mà không tốn thêm VRAM.
+12. **Telltale Tool Engine (.ttarch2, .landb, .font 5VSM/6VSM):**
+    - Kho lưu trữ: Dùng `ttarchext` với Game ID thích hợp (Game ID 54 cho The Wolf Among Us). Pack game thường chia thành nhiều archive phân tầng (`Project_all.ttarch2`, `Menu_all.ttarch2`, `Episode_XX_Project_all.ttarch2`). File update ở archive sau sẽ ghi đè archive trước.
+    - Localization Database (`.landb`): File nhị phân lưu trữ thoại và UI (`5VSM`/`6VSM`). Engine Telltale giải mã chuỗi theo byte đơn, không dùng UTF-8 ở tầng font/landb; chuỗi tiếng Việt bắt buộc mã hóa Single-byte (VN-128: dải 0x80..0xFF và ASCII an toàn). Giữ nguyên 100% token animation cue `{doubtfulA}`, `{angryd}` và định dạng `%s`, `{0}`.
+    - Font Binary (`.font`): Quét toàn bộ file font qua tất cả archive và menu con (kể cả Pause/Settings menu dùng font riêng như `Rockwell_Std_Condensed_48_bold.font`). Mảng `TRectNew` bắt buộc sắp xếp tăng dần tuyệt đối theo `charID` để phục vụ `bsearch` nhị phân; nếu thiếu hoặc sai thứ tự sẽ fallback về `default.font` (Arial 16px) hoặc rụng chữ `ÿ`.
+    - Giới hạn chiều dài chuỗi UI: Bảng cài đặt có độ rộng cột cố định (Graphics Settings) sẽ bị va chạm sprite điều hướng (mũi tên `◄ CAO ►`) nếu chuỗi dịch dài hơn tiếng Anh gốc. Bắt buộc kiểm tra độ dài chuỗi và dùng thuật ngữ ngắn gọn chuẩn game AAA (`MỨC ĐỒ HỌA`, `KẾT CẤU BỀ MẶT`).
+    - Font Fixed-cell vs Proportional: Font ô cố định (`AvantGarde_LT_Book_40` 64px, `AvantGarde_LT_Book_14` 25px) cấm tăng canvas và cấm trừ âm `yOffset` (gây bay dấu ngã `ữ` và gãy baseline). Font proportional (`ITC_Kabel_Book`) phải khóa chết `xAdvance = base_adv` (cấm cộng dồn padding). Chi tiết kỹ thuật xem tại `fonttv`.
+
+Checkpoint người dùng: Main Menu, Options, dialog dài, label nhỏ, plural/macro, input/keybind, dấu tiếng Việt, wrap/clipping, localized images; culture-slot phải kiểm cả English và slot kỹ thuật.
+

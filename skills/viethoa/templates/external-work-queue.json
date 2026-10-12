@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "authority": "derived_cache_rebuild_from_packet_manifests_acceptance_receipts_and_merge_ledger",
+  "project": "<GameName>",
+  "active_phase": "phase0_policy_audit",
+  "parent_phase_sha256": null,
+  "packets": [
+    {
+      "packet_id": "packet-0001",
+      "attempt": 1,
+      "semantic_group": "<domain-or-conversation>",
+      "row_count": 0,
+      "ordered_full_key_sha256": "",
+      "phase_state": "pending",
+      "input_payload_sha256": "",
+      "output_filename": "policy-audit_packet-0001.csv",
+      "accepted_output_sha256": null
+    }
+  ],
+  "completed_packets": 0,
+  "total_packets": 1,
+  "status": "pending"
+}

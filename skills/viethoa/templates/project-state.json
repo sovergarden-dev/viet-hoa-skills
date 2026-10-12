@@ -1,0 +1,58 @@
+{
+  "project": "<GameName>",
+  "game_root": "<canonical game root>",
+  "build_id": "<store/build id>",
+  "phase": "survey",
+  "evidence_level": "hypothesis",
+  "canonical_csv": "workbook/canonical.csv",
+  "canonical_csv_sha256": "",
+  "counts": {
+    "pending": 0,
+    "translated": 0,
+    "reviewed": 0,
+    "needs_context": 0,
+    "rejected": 0
+  },
+  "name_provenance": {
+    "project_origin_country": null,
+    "primary_authorial_language": null,
+    "origin_evidence": [],
+    "policy_path": "translation/name-provenance-policy.json",
+    "policy_sha256": null,
+    "ledger_path": "translation/name-provenance-ledger.csv",
+    "ledger_sha256": null,
+    "audit_status": "not_started",
+    "unresolved_entries": 0
+  },
+  "active_writer": null,
+  "cron": {
+    "job_id": null,
+    "status": "none",
+    "cadence": "every 3m",
+    "batch_size": 60
+  },
+  "external_handoff_in_flight": null,
+  "external_pipeline": {
+    "contract_version": null,
+    "batch_id": null,
+    "packet_id": null,
+    "attempt": null,
+    "lease_id": null,
+    "phase": null,
+    "parent_phase_sha256": null,
+    "input_payload_sha256": null,
+    "source_snapshot_sha256": null,
+    "english_policy_sha256": null,
+    "name_provenance_policy_sha256": null,
+    "name_provenance_ledger_sha256": null,
+    "glossary_sha256": null,
+    "token_profile_sha256": null,
+    "ordered_full_key_sha256": null,
+    "queue_authority": "packet_manifests_acceptance_receipts_merge_ledger",
+    "merge_ledger": "external/merge-ledger.jsonl",
+    "status": "none"
+  },
+  "preview_patch": null,
+  "last_checkpoint": null,
+  "updated_at": null
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "agy-phase1-acceptance-parent/v1",
+  "contract": "AGY-VIETHOA-HANDOFF/2.5-TWO-PHASE-DRAFT12-PREVIEW-FINAL0-GUARDED",
+  "phase1_package_id": "",
+  "phase1_run_id": "",
+  "raw_phase1_return_sha256": "",
+  "accepted_target_snapshot": {"path": "", "sha256": "", "row_count": 0},
+  "canonical": {"canonical_source_sha256": "", "source_snapshot_sha256": "", "ordered_key_sha256": "", "exact_key_set_sha256": ""},
+  "policy": {"english_policy_sha256": "", "glossary_sha256": "", "token_profile_sha256": ""},
+  "acceptance": {"validator": "", "errors": 0, "accepted_rows": 0, "rejected_rows": 0},
+  "decision_checkpoint": {
+    "state": "phase1_accepted_waiting_for_user_direction",
+    "allowed_next_routes": ["build_demo_patch", "external_phase2_antigravity", "hermes_cron_phase2", "pause"],
+    "selected_route": null
+  },
+  "host_lockdown": {"mode": "idle_main_only", "limit": 0, "reserved": 0, "receipt_sha256": ""}
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "rule_id": "horny_euphemism",
+    "category": "banned_euphemism",
+    "source_pattern": "\\bhorny\\b",
+    "target_pattern": "\\bhưng\\s*phấn\\b|\\bphấn\\s*khởi\\b",
+    "rationale": "HORNY refers to sexual arousal / lust; softening to 'hưng phấn' turns an adult stat into mild excitement."
+  },
+  {
+    "rule_id": "perversion_bureaucratic",
+    "category": "bureaucratic_softening",
+    "source_pattern": "\\bperversion\\b|\\bpervert(ed)?\\b",
+    "target_pattern": "\\bđồi\\s*trụy\\b",
+    "rationale": "PERVERSION in adult fiction refers to kink / deviance / being a pervert; 'đồi trụy' is administrative legal jargon."
+  },
+  {
+    "rule_id": "trenchcoat_archaic_loanword",
+    "category": "archaic_loanword",
+    "source_pattern": "\\btrenchcoat\\b|\\btrench\\s*coat\\b",
+    "target_pattern": "\\bmăng\\s*tô\\b",
+    "rationale": "'Măng tô' (manteau) is a French colonial-era loanword out of place in a modern / cyberpunk aesthetic."
+  },
+  {
+    "rule_id": "weatherbear_brand_flattening",
+    "category": "brand_flattening",
+    "source_pattern": "\\bweatherbear\\b",
+    "target_pattern": "^dự\\s*báo\\s*thời\\s*tiết$|\\bthời\\s*tiết\\b",
+    "rationale": "WeatherBear is a fictional brand/mascot app name; flattening to generic 'dự báo thời tiết' destroys creator IP."
+  }
+]

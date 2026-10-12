@@ -1,0 +1,13 @@
+{
+  "schema": "fonttv/glyph-evidence/v1",
+  "type": "build_manifest",
+  "font_sha256": "db93d5a7e4653eeebaef46def356744f755003901dcb060d8d4f0a5078545eb6",
+  "producer": "fixture build step",
+  "slots": {
+    "143": "ệ",
+    "155": "ư",
+    "167": "ạ",
+    "178": "đ",
+    "255": "Đ"
+  }
+}

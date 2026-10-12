@@ -1,0 +1,97 @@
+{
+  "contract_version": "2.5.1",
+  "receiver_control_baseline": "AGY-VIETHOA-HANDOFF/2.5-TWO-PHASE-DRAFT12-PREVIEW-FINAL0-GUARDED",
+  "phase": "phase1_parallel_draft",
+  "package_id": "<package-id>",
+  "run_id": "<run-id>",
+  "project": "<GameName>",
+  "batch_id": "<batch-id>",
+  "build_id": "<store-build-id>",
+  "source_language": "English",
+  "target_language": "Vietnamese",
+  "translation_only": true,
+  "canonical_write_authority": "Hermes",
+  "identity": {
+    "canonical_key": ["domain", "key"],
+    "handoff_id_mapping": "handoff-id-map.csv"
+  },
+  "host_control": {
+    "required_mode": "phase1_parallel_draft",
+    "required_subagent_limit": 12,
+    "denied_tools": ["manage_subagents", "send_message"],
+    "single_main_coordinator": true,
+    "one_bound_main_conversation": true,
+    "child_conversations_allowed": true,
+    "nested_delegation_allowed": false,
+    "lease_authorization_path": "host/phase1-host-authorization.json",
+    "semantic_guard_required": true,
+    "semantic_authorization_schema": "agy-semantic-origin-authorization/v3",
+    "semantic_authorization_template_path": "host/semantic-authoring-authorization.template.json",
+    "semantic_authorization_materialization": "host-only-after-extraction-before-agent-task",
+    "challenge_overlay_boundary": "host-private-outside-package-and-work-roots",
+    "native_direct_write_only": true,
+    "allowed_semantic_write_tool": "write_to_file",
+    "host_private_challenge_overlay_required": false,
+    "host_private_recheck_schedule_required": false
+  },
+  "draft_evidence_schema": {
+    "path": "draft-evidence-schema.json",
+    "sha256": ""
+  },
+  "tools": {
+    "controller": {"path": "tools/controller.py", "sha256": ""},
+    "finalizer": {"path": "tools/finalizer.py", "sha256": ""},
+    "semantic_guard": {"path": "tools/semantic_response_guard.py", "sha256": ""},
+    "semantic_authorization_materializer": {"path": "tools/materialize_semantic_authorization_v3.py", "sha256": ""},
+    "outbound_validator": {"path": "tools/validate_two_phase_handoff_package.py", "sha256": ""}
+  },
+  "canonical": {
+    "canonical_source_sha256": "",
+    "source_snapshot_sha256": "",
+    "ordered_key_sha256": "",
+    "exact_key_set_sha256": ""
+  },
+  "name_provenance": {
+    "project_origin_country": "<country>",
+    "primary_authorial_language": "<BCP-47 language tag>",
+    "origin_evidence": [{"kind": "creator_or_original_market_primary_source", "locator": "<URL or workspace evidence path>"}],
+    "policy": {"path": "name-provenance-policy.json", "sha256": ""},
+    "ledger": {"path": "name-provenance-ledger.csv", "sha256": "", "unresolved_entries": 0},
+    "english_localization_role": "reference_only_not_name_authority"
+  },
+  "inputs": {
+    "full_corpus": {"path": "input/full-corpus.csv", "sha256": "", "row_count": 0, "ordered_handoff_id_sha256": ""},
+    "handoff_map": {"path": "handoff-id-map.csv", "sha256": ""},
+    "english_policy": {"path": "english-policy.csv", "sha256": ""},
+    "name_provenance_policy": {"path": "name-provenance-policy.json", "sha256": ""},
+    "name_provenance_ledger": {"path": "name-provenance-ledger.csv", "sha256": ""},
+    "glossary": {"path": "glossary.csv", "sha256": ""},
+    "token_profile": {"path": "token-profile.json", "sha256": ""}
+  },
+  "schedule": {
+    "path": "schedule/phase1.json",
+    "sha256": "",
+    "packet_count": 0,
+    "coverage": "full_corpus_exact_partition",
+    "max_concurrent_workers": 12
+  },
+  "workflow": {
+    "resume": "same_package_run_append_only_ledger",
+    "one_outbound_master_zip": true,
+    "one_phase_return_master_zip": true,
+    "phase1_is_preview_grade_draft_not_final": true,
+    "native_worker_to_direct_write_match_required": true,
+    "hermes_acceptance_required_before_next_route": true,
+    "explicit_user_direction_required_after_phase1": true,
+    "post_phase1_state": "phase1_accepted_waiting_for_user_direction",
+    "allowed_next_routes": ["build_demo_patch", "external_phase2_antigravity", "hermes_cron_phase2", "pause"]
+  },
+  "preview_policy": {
+    "optional_user_selected_route": true,
+    "allowed_after_hermes_structural_acceptance": true,
+    "label": "PREVIEW_PHASE1_DEMO_NOT_FINAL",
+    "canonical_merge_allowed": false,
+    "public_release_allowed": false
+  },
+  "expected_final_filename": "<project>-<package-id>-PHASE1-FINAL-Antigravity.zip"
+}

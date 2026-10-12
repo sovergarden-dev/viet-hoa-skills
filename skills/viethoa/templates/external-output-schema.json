@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "format": "csv",
+  "encoding": "utf-8-sig",
+  "phase0_columns": [
+    "handoff_id",
+    "domain",
+    "key",
+    "review_action",
+    "proposed_translation_policy",
+    "proposed_locked_english_terms",
+    "proposed_identity_expected",
+    "reason",
+    "notes"
+  ],
+  "translation_phase_columns": [
+    "handoff_id",
+    "domain",
+    "key",
+    "translation_vi",
+    "review_action",
+    "reason_codes",
+    "notes"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "agy-phase2-schedule/v2",
+  "package_id": "<phase2-package-id>",
+  "run_id": "<phase2-run-id>",
+  "phase": "phase2_main_only_final",
+  "packetization": {
+    "method": "risk_profiled_reverse_contiguous",
+    "limits": {"high_risk": 30, "dialogue": 60, "ui": 100, "identity_ui": 120}
+  },
+  "challenge_policy": {
+    "min_percent_per_packet": 5,
+    "min_slots_per_packet": 1,
+    "actual_rows_host_private": true
+  },
+  "packets": [
+    {
+      "packet_id": "p2-00001",
+      "real_handoff_ids": ["<real-id-in-reverse-order>"],
+      "real_prompt_rows_sha256": "<sha256-of-canonical-real-prompt-row-list>",
+      "challenge_slots": 1
+    }
+  ],
+  "recheck_policy": {
+    "all_rewritten": true,
+    "all_runtime_flagged": true,
+    "all_high_risk": true,
+    "accepted_sample_min_percent": 10,
+    "accepted_sample_method": "stratified_deterministic",
+    "accepted_sample_strata_fields": ["domain", "content_class", "translation_policy"],
+    "fresh_prompts_hide_prior_decision": true
+  }
+}

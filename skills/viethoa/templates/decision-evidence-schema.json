@@ -1,0 +1,59 @@
+{
+  "schema_version": 2,
+  "schema": "agy-explicit-review/v2",
+  "encoding": "utf-8-canonical-json-no-bom-no-trailing-newline",
+  "top_level_fields": [
+    "schema",
+    "batch_id",
+    "prompt_sha256",
+    "decisions"
+  ],
+  "decision_actions": {
+    "accepted": {
+      "fields": [
+        "handoff_id",
+        "action",
+        "review_codes",
+        "notes"
+      ],
+      "review_codes_minimum": 3,
+      "allowed_review_codes": [
+        "source_fidelity",
+        "context_fit",
+        "natural_vi",
+        "glossary_policy",
+        "tokens_format",
+        "ui_fit",
+        "keep_identity",
+        "proper_noun_policy"
+      ]
+    },
+    "rewritten": {
+      "fields": [
+        "handoff_id",
+        "action",
+        "translation_vi",
+        "reason_codes",
+        "notes"
+      ]
+    },
+    "needs_context": {
+      "fields": [
+        "handoff_id",
+        "action",
+        "question"
+      ]
+    }
+  },
+  "invariants": [
+    "decisions contains exactly one object for every input row in exact prompt order.",
+    "Legacy accepted_ids, ranges, wildcards, omission defaults, duplicate IDs and extra IDs are invalid.",
+    "batch_id and prompt_sha256 bind the exact current prompt bytes.",
+    "accepted preserves current_translation_vi byte-for-byte and includes at least three distinct allowed review_codes.",
+    "rewritten is nonblank, differs from current target and includes nonempty specific reason_codes.",
+    "needs_context supplies one concrete question and no invented target.",
+    "A deterministic challenge row cannot be accepted and must match the package-declared expected correction.",
+    "The native write_to_file payload, disk response bytes and host semantic-origin event hash must match.",
+    "Scripts and terminal commands cannot create any decision object, identity list, review code, reason, question or provenance."
+  ]
+}

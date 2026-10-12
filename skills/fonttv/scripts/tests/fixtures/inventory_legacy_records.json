@@ -1,0 +1,37 @@
+{
+  "schema": "fonttv/font-inventory/v1",
+  "font": "fixture-A-original-records.font",
+  "sha256": "369720298bb0640b3d0b73a0b06ae0def605bc002650dc75d1d3fff5331a631b",
+  "adapter": {
+    "name": "fixture",
+    "version": "test-2",
+    "supported": true,
+    "capabilities": [
+      "records",
+      "glyph_identity",
+      "ink",
+      "uv",
+      "metrics"
+    ],
+    "input_sha256": "369720298bb0640b3d0b73a0b06ae0def605bc002650dc75d1d3fff5331a631b",
+    "inventory_method": "hand-written test fixture describing the fixture font bytes",
+    "native_encoding": {
+      "name": "cp1252",
+      "resolver": "record id decoded as a cp1252 byte"
+    }
+  },
+  "lookup": "binary_search",
+  "records": [
+    {"id": 32, "glyph_identity": " ", "identity_source": ["native_encoding"], "uv": [0.0, 0.0, 0.0, 0.0], "x_advance": 12},
+    {"id": 68, "glyph_identity": "D", "identity_source": ["native_encoding"], "uv": [0.1, 0.1, 0.16, 0.18], "ink_pixels": 380, "x_advance": 34},
+    {"id": 97, "glyph_identity": "a", "identity_source": ["native_encoding"], "uv": [0.2, 0.1, 0.25, 0.18], "ink_pixels": 300, "x_advance": 26},
+    {"id": 100, "glyph_identity": "d", "identity_source": ["native_encoding"], "uv": [0.3, 0.1, 0.35, 0.18], "ink_pixels": 320, "x_advance": 30},
+    {"id": 101, "glyph_identity": "e", "identity_source": ["native_encoding"], "uv": [0.4, 0.1, 0.45, 0.18], "ink_pixels": 290, "x_advance": 26},
+    {"id": 117, "glyph_identity": "u", "identity_source": ["native_encoding"], "uv": [0.5, 0.1, 0.55, 0.18], "ink_pixels": 280, "x_advance": 27},
+    {"id": 143, "glyph_identity": null, "identity_source": [], "uv": [0.61, 0.3, 0.61, 0.38], "ink_pixels": 0, "x_advance": 1},
+    {"id": 155, "glyph_identity": "›", "identity_source": ["native_encoding"], "uv": [0.62, 0.3, 0.65, 0.38], "ink_pixels": 60, "x_advance": 14},
+    {"id": 167, "glyph_identity": "§", "identity_source": ["native_encoding"], "uv": [0.66, 0.3, 0.7, 0.38], "ink_pixels": 150, "x_advance": 22},
+    {"id": 178, "glyph_identity": "²", "identity_source": ["native_encoding"], "uv": [0.72, 0.3, 0.72, 0.38], "ink_pixels": 0, "x_advance": 17},
+    {"id": 255, "glyph_identity": "ÿ", "identity_source": ["native_encoding"], "uv": [0.8, 0.3, 0.85, 0.38], "ink_pixels": 310, "x_advance": 26}
+  ]
+}

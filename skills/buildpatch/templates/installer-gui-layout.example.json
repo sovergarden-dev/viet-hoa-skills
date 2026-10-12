@@ -1,0 +1,23 @@
+{
+  "schema": "buildpatch/installer-gui-layout/v1",
+  "client": { "w": 1024, "h": 576 },
+  "protected": [
+    { "name": "title", "x": 0, "y": 0, "w": 410, "h": 535 },
+    { "name": "faces", "x": 430, "y": 25, "w": 520, "h": 335 }
+  ],
+  "safe": [
+    { "name": "dock", "x": 556, "y": 400, "w": 444, "h": 166 }
+  ],
+  "controls": {
+    "uninstall": { "parent": "dock", "x": 18, "y": 109, "w": 116, "h": 36 },
+    "install": { "parent": "dock", "x": 142, "y": 109, "w": 284, "h": 37 },
+    "signature": { "parent": "dock", "x": 378, "y": 150, "w": 58, "h": 16 },
+    "build": { "parent": "dock", "x": 276, "y": 51, "w": 150, "h": 16 }
+  },
+  "locked": {
+    "rainbow_phase": 0.045,
+    "signature_text": "Syrin.online",
+    "install_label": "Cài đặt",
+    "uninstall_label": "Gỡ cài đặt"
+  }
+}

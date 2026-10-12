@@ -1,0 +1,5 @@
+# Tested together on Windows; install in isolated test environment.
+fonttools==4.66.1
+uharfbuzz==0.56.2
+numpy==2.5.3
+pillow==12.3.0

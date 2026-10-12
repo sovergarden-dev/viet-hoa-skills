@@ -1,0 +1,10 @@
+[
+  {
+    "id": 178,
+    "check": "metrics_valid",
+    "reason": "<why this metric deviation is intentional>",
+    "approved_by": "<human reviewer>",
+    "approver_type": "human",
+    "scope": "<exact field and consumer, e.g. x_advance on pause-menu font only>"
+  }
+]

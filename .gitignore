@@ -1,0 +1,43 @@
+# Bytecode & Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Caches & Environments
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+ENV/
+env/
+
+# Binary game assets & Unity bundles (Disallowed)
+*.dll
+*.bundle
+*.assets
+*.pak
+*.ucas
+*.utoc
+*.exe
+*.bin
+*.dat
+
+# Local runtime state, logs, and checkpoints
+.checkpoint/
+state/
+backup/
+patched_bundles/
+output_bundles/
+logs/
+*.log
+*.tmp
+*.bak
+.hermes/locks/canonical.lock
+.hermes/locks/canonical.lock.json
+
+# OS specific files
+.DS_Store
+Thumbs.db
+Desktop.ini
