@@ -1,0 +1,34 @@
+name: CI - Skills Monorepo Verification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  hygiene-and-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verify Vendored Contracts & Libs Sync (Zero Drift)
+        run: |
+          python tools/vendor_shared.py --check
+
+      - name: Hygiene & Security Audit (No Leaks, Size Budgets)
+        run: |
+          python tools/check_hygiene.py
+
+      - name: Run Core I/O & Invariant Unit Tests
+        run: |
+          python tools/tests/test_hermes_io.py
+
+      - name: Lint viethoa Skill Package
+        run: |
+          python skills/viethoa/scripts/lint_skill_package.py skills/viethoa
