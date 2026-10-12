@@ -628,6 +628,40 @@ class TestPronounValidator(unittest.TestCase):
         for p in v.get("unauthorized_call", []):
             self.assertTrue(unicodedata.is_normalized("NFC", p))
 
+    def test_renpy_tag_isolation_and_formatting(self) -> None:
+        """Verify Ren'Py formatting tags, brackets, and variable interpolations do not distort pronoun detection."""
+        matrix = {
+            "characters": {
+                "Heroine": {"gender": "female", "role": "heroine"},
+                "Protagonist": {"gender": "male", "role": "hero"},
+            },
+            "matrices": [
+                {"speaker": "Heroine", "listener": "Protagonist", "stage": "all", "self_pronouns": ["em"], "call_pronouns": ["anh"]},
+            ],
+            "special_rules": {},
+        }
+
+        # 1. Pronoun words embedded INSIDE tags must NOT trigger false drift
+        clean_tag_rows = [
+            {"key": "t1", "speaker": "Heroine", "listener": "Protagonist", "source": "s", "target": "Chào [anh]! Em rất vui được gặp lại anh."},
+            {"key": "t2", "speaker": "Heroine", "listener": "Protagonist", "source": "s", "target": "Vật phẩm {color=anh}bảo vật{/color} em dành tặng cho anh."},
+            {"key": "t3", "speaker": "Heroine", "listener": "Protagonist", "source": "s", "target": "Anh hãy nhận lấy chiếc vé [[anh em]] này từ tay em nhé."},
+            {"key": "t4", "speaker": "Heroine", "listener": "Protagonist", "source": "s", "target": "Điểm số là %(anh)s điểm, cấp độ {0}, em chúc mừng anh!"},
+            {"key": "t5", "speaker": "Heroine", "listener": "Protagonist", "source": "s", "target": "Tốc độ [x:.2f] km/h đạt chuẩn, {b}em{/b} luôn đồng hành cùng anh."},
+        ]
+        res_clean = pv.scan_dialogue_rows(clean_tag_rows, matrix)
+        self.assertEqual(res_clean["drift_count"], 0, f"Expected 0 false drift inside tags, got {res_clean['violations']}")
+
+        # 2. Genuine drift OUTSIDE tags must still be detected with 100% precision
+        dirty_tag_rows = [
+            {"key": "td1", "speaker": "Heroine", "listener": "Protagonist", "source": "s", "target": "Chào [player_name]! Rất vui được gặp lại cậu."},
+            {"key": "td2", "speaker": "Heroine", "listener": "Protagonist", "source": "s", "target": "Vật phẩm {color=#f00}[item]{/color}! Tôi không thích món này đâu."},
+        ]
+        res_dirty = pv.scan_dialogue_rows(dirty_tag_rows, matrix)
+        self.assertEqual(res_dirty["drift_count"], 2)
+        v_keys = {v["key"] for v in res_dirty["violations"]}
+        self.assertEqual(v_keys, {"td1", "td2"})
+
 
 if __name__ == "__main__":
     unittest.main()

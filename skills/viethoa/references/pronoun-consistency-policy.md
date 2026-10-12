@@ -100,7 +100,16 @@ Với các game không có cột `listener` riêng biệt trong bảng text (ch�
 4. **Thứ tự Ưu tiên Quy tắc (Precedence Architecture):**
    - Bộ quy tắc ma trận 6 cấp (`best_rule`) được tra cứu trước để xác định đầy đủ tập đại từ tự xưng (`allowed_self`) và gọi đối phương (`allowed_call`).
    - Rào chắn bảo vệ nhân vật giới tính chưa xác định (`Unknown-Gender Guardrail`): Chỉ kiểm tra các đại từ gọi trực tiếp người nghe; tự động miễn trừ đại từ tự xưng hợp lệ của người nói (ví dụ người anh xưng *"anh"* khi trò chuyện với em nhỏ có giới tính chưa xác định).
-5. **Đảm bảo Tuyệt đối Chuẩn hóa Unicode C28:**
+5. **Đảm bảo Tuyệt đối Chuẩn hóa Unicode C28 & Che chắn Thẻ Định dạng (Whitelist Tag Masking):**
+   - **Cách ly Mã nội suy & Thẻ định dạng (`INTERPOLATION_TAG_PATTERN`):**
+     * Tự động che chắn bằng khoảng trắng nguyên vẹn độ dài trước khi bóc tách đại từ:
+       - Biến nội suy Ren'Py: `[player_name]`, `[name!u]`, `[x:.2f]`, `[price:.2f]`.
+       - Khối ký tự thoát Ren'Py: `[[...]]`, `{{...}}`.
+       - Thẻ định dạng văn bản Ren'Py: `{color=...}`, `{b}`, `{i}`, `{u}`, `{s}`, `{w}`, `{p}`, `{nw}`, `{fast}`, `{a=...}`.
+       - Thẻ hiển thị Unity TMP: `<color=...>`, `<style=...>`, `<b>`, `<i>`, `<size=...>`, `<sprite=...>`.
+       - Định dạng Python/C/C#: `%(name)s`, `%s`, `%d`, `{0}`, `${variable}`.
+     * Bảo toàn tuyệt đối toán tử so sánh toán học `<` và `>` (không dùng regex nuốt chuỗi tự do `<[^>]+>`).
+     * Đảm bảo các đại từ trùng tên nằm BÊN TRONG thẻ/biến (như `{color=anh}`, `[anh]`) không bị bóc tách nhầm thành đại từ xưng hô, trong khi đại từ nằm NGOÀI thẻ (như `{b}em{/b}`) vẫn được đối soát nghiêm ngặt với ma trận.
    - So khớp phân tích thông qua góc nhìn `NFKC + casefold`.
    - Mọi chuỗi xuất báo cáo vi phạm (`target`, `source`, `evidence`) và tệp canonical luôn được chuẩn hóa nguyên vẹn 100% dạng chuẩn `NFC` byte-identical.
 

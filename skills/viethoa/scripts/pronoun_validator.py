@@ -86,7 +86,10 @@ def find_standalone_occurrences(text: str, pronoun: str, allow_demonstratives: b
     """Find token indices of a pronoun that appear standalone on ORIGINAL tokens, filtering out modifiers, compounds, and demonstratives."""
     norm_text = unicodedata.normalize("NFKC", text).casefold()
     p_norm = unicodedata.normalize("NFKC", pronoun).casefold()
-    words = re.findall(r"\b[a-zà-ỹđ0-9_-]+\b", norm_text)
+
+    # Pre-mask formatting tags and placeholders so tokens inside tags (e.g. [anh], {color=anh}) are not treated as standalone
+    cleaned_tags = mask_tags_and_placeholders(norm_text)
+    words = re.findall(r"\b[a-zà-ỹđ0-9_-]+\b", cleaned_tags)
     indices = []
     for i, w in enumerate(words):
         if w != p_norm:
@@ -141,10 +144,28 @@ def find_standalone_occurrences(text: str, pronoun: str, allow_demonstratives: b
     return indices
 
 
+# Regex pattern to whitelist and mask formatting tags, placeholders, and interpolation variables
+# (Ren'Py [var], [name!u], {color=...}, {b}, {i}, {w}, {p}, {nw}, {a=...}, %(name)s, {0}, ${var}, Unity TMP <color=...>)
+# Preserves mathematical operators '<' and '>' by strictly matching valid tag identifiers.
+INTERPOLATION_TAG_PATTERN = re.compile(
+    r"\[\[[^\]]*\]\]|\{\{[^\}]*\}\}|"  # Ren'Py literal escaped blocks [[...]] and {{...}} masked as an unbroken unit
+    r"\[[a-zA-Z0-9_!.:]+\]|"  # Ren'Py variable interpolation [player_name], [name!u], [x:.2f]
+    r"\{/?(?:color(?:=[^}]+)?|b|i|u|s|a(?:=[^}]+)?|w(?:=[^}]+)?|p(?:=[^}]+)?|nw|fast|size(?:=[^}]+)?|font(?:=[^}]+)?)\}|"  # Ren'Py formatting tags
+    r"<style=[^>]+>|</style>|<color=[^>]+>|</color>|<b>|</b>|<i>|</i>|<size=[^>]+>|</size>|<sprite=[^>]+>|"  # Unity TMP tags
+    r"%\([^)]+\)[sdf]|%[sdf]|"  # Python/C printf format placeholders %(name)s, %s, %d
+    r"\{\d+\}|\$\{[a-zA-Z0-9_]+\}"  # C# {0} format placeholders and shell/Ren'Py ${var}
+)
+
+
+def mask_tags_and_placeholders(text: str) -> str:
+    """Mask formatting tags and code placeholders with whitespace of exact length to prevent pronoun false extraction."""
+    return INTERPOLATION_TAG_PATTERN.sub(lambda m: " " * len(m.group(0)), text)
+
+
 def extract_pronouns(text: str) -> dict[str, set[str]]:
-    """Extract candidate self and call pronouns from Vietnamese text, suppressing common compounds."""
+    """Extract candidate self and call pronouns from Vietnamese text, suppressing tags and common compounds."""
     norm_text = unicodedata.normalize("NFKC", text).casefold()
-    cleaned = norm_text
+    cleaned = mask_tags_and_placeholders(norm_text)
 
     # Suppress known compound phrases by masking them with whitespace of exact length,
     # sorting by length descending so longer idioms (e.g. "anh em mình") are masked before sub-compounds ("anh em")

@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **viethoa**: Bổ sung bộ lọc che chắn thẻ định dạng và biến nội suy (`INTERPOLATION_TAG_PATTERN` & `mask_tags_and_placeholders`) bảo toàn chuẩn C28 cho engine Ren'Py (`[player_name]`, `[name!u]`, `[x:.2f]`, `[[...]]`, `{{...}}`, `{color=...}`, `{b}`, `{i}`, `{u}`, `{s}`, `{w}`, `{p}`, `{nw}`, `{fast}`, `{a=...}`), Unity TMP (`<color=...>`, `<style=...>`, `<b>`, `<i>`), và code placeholders (`%(name)s`, `%s`, `{0}`, `${variable}`).
+- **viethoa**: Bổ sung unit test `test_renpy_tag_isolation_and_formatting` bảo đảm đại từ bên trong thẻ không bị bóc tách nhầm thành xưng hô hội thoại.
+- **viethoa**: Xây dựng Tier-1 Ren'Py placeholder mini-harness độc lập ngoài repo tại `_dogfood/renpy_tier1/` (75 dòng thoại synthetic, tuân thủ C26), đạt 100% trên cả 5 bất biến (Placeholder Parity, Tag Balancing, Tag Isolation, 0/50 Clean FP + 25/25 Dirty Recall, C28 100% NFC).
 - **viethoa**: Mở rộng bộ kiểm thử hồi quy `skills/viethoa/scripts/tests/test_pronoun_validator.py` lên 32 ca lỗi synthetic và 52 ca chuẩn đối chứng (phủ toàn diện các bẫy từ đồng âm `con, ba, u, thầy, cháu`).
 - **viethoa**: Bổ sung kiểm thử byte-exact Unicode NFC cho chuẩn C28, đảm bảo trường dữ liệu báo cáo luôn giữ nguyên dạng NFC bất biến kể cả khi nạp input NFD decomposed.
 - **ci**: Ghim runner cố định `ubuntu-24.04 LTS`, thiết lập timeout 10 phút, ghim SHA commit cho `actions/checkout@11bd719` (# v4.2.2) và `actions/setup-python@4237552` (# v5.4.0), bổ sung job `canary-runner` trên `ubuntu-latest` (`continue-on-error: true`) và `.github/dependabot.yml`.
