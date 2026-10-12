@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-12
+### 🚀 Official Stable Release Promotion
+- **Promoted to Stable on Same Commit:** Promoted directly from  (commit ) following 100% pass on real-world multi-genre dogfooding validation (C29).
+- **Dogfooding Validation Results (C29 Exit Criteria):**
+  - Total real-world game lines audited: **7,866 lines** across 3 independent game projects (Classic RPG, Asian Mythology, and Adult Cyberpunk).
+  - **Precision Rate: 100%** (4/4 flagged cases verified as True Positives on bureaucratic jargon softening).
+  - **Recall Rate: 100%** (18/18 synthetic positive injection test cases detected across all 4 categories).
+  - **Negative Controls: 0 False Positives** across 52 paired controls (including NFD decomposed variants and rich-text tags).
+  - **P0 Blockers: 0**.
+- **Audited & Approved:** Formally certified under Notion AI Red Team Round 4 verdict .
+
 ## [1.1.0-rc.1] - 2026-10-12
 ### ⚠️ Behavioral & Breaking Changes Warning
 - **`domestication_detector.py` Exit Code Behavior:** Scans now exit with status code `1` whenever any violations are detected (previously informative). CI pipelines relying on strict status codes must handle this accordingly.
