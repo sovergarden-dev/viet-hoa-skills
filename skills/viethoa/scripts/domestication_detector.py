@@ -98,13 +98,6 @@ DEFAULT_RULES: list[dict[str, Any]] = [
         "rationale": "Titan Group is a corporate entity name; translating to 'Tập đoàn khổng lồ' erases proper noun status.",
     },
     {
-        "rule_id": "dino_mascot",
-        "category": "proper_noun_domestication",
-        "source_pattern": re.compile(r"\bdino\b", re.IGNORECASE),
-        "target_pattern": re.compile(r"\bkhủng\s*long\b", re.IGNORECASE),
-        "rationale": "Dino is a character / mascot proper noun; translating to generic 'khủng long' flattens unique identity.",
-    },
-    {
         "rule_id": "styx_brew_brand",
         "category": "proper_noun_domestication",
         "source_pattern": re.compile(r"\bstyx\s*brew\b", re.IGNORECASE),
@@ -186,6 +179,27 @@ def load_rules(rules_path: str | Path | None = None) -> list[dict[str, Any]]:
     return compiled_rules
 
 
+def mask_for_match(text: str) -> str:
+    """Mask markup tags, formatting placeholders, and control characters for robust regex matching.
+    
+    Strips safely using a strict whitelist to prevent swallowing comparison operators like '< 50 and > 20':
+    - Unity TextMeshPro / RichText tags: color, sprite, b, i, u, s, size, font, material, link, mark, etc.
+    - Format placeholders: {player}, {0}, %s, %d, etc.
+    - Multiple whitespaces collapsed to single space.
+    """
+    if not text:
+        return ""
+    # Strip whitelisted HTML / TextMeshPro rich text tags only (leaves comparison '<' and '>' intact)
+    tag_pattern = r"</?(?:color|sprite|b|i|u|s|size|font|material|link|mark|mspace|line-height|align|alpha|cspace|indent|noparse|pos|voffset|width)\b[^>]*>"
+    cleaned = re.sub(tag_pattern, " ", text, flags=re.IGNORECASE)
+    # Strip placeholders like {player}, {0}, {target_name}
+    cleaned = re.sub(r"\{[a-zA-Z0-9_]+\}", " ", cleaned)
+    # Strip printf-style placeholders like %s, %d, %1$s
+    cleaned = re.sub(r"%(\d+\$)?[a-zA-Z]", " ", cleaned)
+    # Collapse multiple whitespaces and strip
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
 def scan_pairs(
     items: list[dict[str, Any]],
     rules: list[dict[str, Any]] | None = None,
@@ -203,15 +217,20 @@ def scan_pairs(
         if not src.strip() or not tgt.strip():
             continue
 
+        # Keep output faithful in NFC
         src_norm = unicodedata.normalize("NFC", src)
         tgt_norm = unicodedata.normalize("NFC", tgt)
+
+        # Build clean matching views (masked tags + NFKC + casefold for robust match)
+        src_match_view = unicodedata.normalize("NFKC", mask_for_match(src_norm)).casefold()
+        tgt_match_view = unicodedata.normalize("NFKC", mask_for_match(tgt_norm)).casefold()
 
         for rule in active_rules:
             s_pat: re.Pattern = rule["source_pattern"]
             t_pat: re.Pattern = rule["target_pattern"]
 
-            s_match = s_pat.search(src_norm)
-            t_match = t_pat.search(tgt_norm)
+            s_match = s_pat.search(src_match_view)
+            t_match = t_pat.search(tgt_match_view)
 
             if s_match and t_match:
                 violations.append({

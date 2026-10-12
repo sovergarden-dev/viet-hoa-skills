@@ -6,19 +6,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Changed
-- **viethoa**: Expanded anti-domestication detection engine (`domestication_detector.py`) with 19 high-confidence rules across 4 categories (adult euphemisms, western brands, Japanese Romaji names, archaic loanwords), bidirectional NFC normalization, and a paired negative control test suite with 27 controls (0 false-positives):
-  - `references/anti-domestication-corpus.md`: Full policy documentation on IP preservation, Romaji author-intent, and explicit 18+ content fidelity.
-  - `templates/proper-noun-ledger.csv`: Project-level ledger template for locking proper nouns with status and rationale.
-- **fonttv**: Streamlined `SKILL.md` from 14.9 KB to 8.3 KB (below 10 KB budget, C19) by extracting detailed specifications into modular references:
-  - `references/unity-tmp-fallback-and-weight-policy.md`: Unity TMP mixed-weight & ransom-note fallback prevention rules.
-  - `references/tool-inventory-and-verdicts.md`: Full 7-script audit capability inventory, exit codes `0..4`, and isolated test execution requirements.
-  - `references/workflow-and-route-lifecycle.md`: Detailed 10-step font engineering lifecycle, route classification (A/B/C), and release proof acceptance gates.
+
+## [1.1.0-rc.1] - 2026-10-12
+### ⚠️ Behavioral & Breaking Changes Warning
+- **`domestication_detector.py` Exit Code Behavior:** Scans now exit with status code `1` whenever any violations are detected (previously informative). CI pipelines relying on strict status codes must handle this accordingly.
+- **Detector Preprocessing View:** Matching now applies a strict whitelist tag-masking pass (stripping Unity TextMeshPro tags like `<color=...>`, `<sprite=...>` and placeholders like `{player}`, `{0}`, `%s` while preserving mathematical operators like `<` and `>`) combined with `NFKC` and `casefold()` on matching views. Output `source` and `target` remain 100% faithful in Unicode `NFC`.
+- **18+ Content Notice:** Rule definitions and test suites explicitly cover adult terminology and colloquial slang to protect source-fidelity against administrative softening.
 
 ### Added
-- Status badges in `README.md` (CI passing, Dynamic Release, and MIT License).
-- `.gitignore` rule for release distribution build directory (`dist/`).
-- This `CHANGELOG.md` tracking project evolution.
+- **Anti-Domestication Detection Engine Expansion (P2b / C20, C27, C28):**
+  - Expanded from 4 to **18 high-confidence default rules** across 4 categories:
+    - *18+ Adult Euphemisms & Softening:* `horny_euphemism`, `perversion_bureaucratic`, `creampie_softening`, `slut_whore_bureaucratic`, `cum_ejaculation_softening`, `dildo_flattening`.
+    - *Western Brands & Proper Nouns:* `blackdog_brand`, `titan_group_brand`, `styx_brew_brand`, `silver_bullet_brand`, `night_city_proper_noun`.
+    - *Japanese Romaji Names:* `romaji_suzume`, `romaji_yukari`, `romaji_kazuha`, `romaji_shinji`, `romaji_hotaru`.
+    - *Archaic Loanwords & Brand Flattening:* `trenchcoat_archaic_loanword`, `weatherbear_brand_flattening`.
+  - Narrow project-specific terms (such as mascot `Dino`) are deliberately managed via project-level ledgers rather than global default rules to prevent false-positives on general vocabulary (e.g. `dinosaur fossil` -> `hóa thạch khủng long`, verified by test case `neg_52`).
+  - Added `skills/viethoa/references/anti-domestication-corpus.md` documenting policies, categories, and preprocessing architecture.
+  - Added `skills/viethoa/templates/proper-noun-ledger.csv` for project-level proper noun locking.
+  - Expanded test suite `test_domestication_detector.py` to 13 tests with **52 paired negative controls** (including NFD decomposed variants and tag-embedded sentences) achieving **0 false-positives** (C29).
+- **FontTV Router Modularization & End-to-End Golden Tests (P2a / C19, C23):**
+  - Streamlined `skills/fonttv/SKILL.md` from 14.9 KB down to **8,358 bytes UTF-8 LF** (well under the 10 KB budget), eliminating token context bloat.
+  - Extracted comprehensive operational guides into 3 new modular reference documents:
+    - `references/unity-tmp-fallback-and-weight-policy.md`: Unity TMP mixed-weight & ransom-note fallback prevention rules.
+    - `references/tool-inventory-and-verdicts.md`: Full 7-script audit capability inventory, exit codes `0..4`, semantic re-execution, and isolated test execution requirements.
+    - `references/workflow-and-route-lifecycle.md`: Detailed 10-step font engineering lifecycle, route classification (A/B/C), and release proof acceptance gates.
+  - Added `tools/tests/test_router_golden.py` validating link resolution (19/19 links resolve on disk), size budgets, and mandatory reading directives.
+- **Dogfooding Hygiene Barrier (C26):**
+  - Enhanced `tools/check_hygiene.py` with an internal game workspace pattern scanner to prevent confidential project names or proprietary raw assets from leaking into the public repository.
+  - Added `.gitignore` patterns for `dogfood/` and `_dogfood/`.
+- **Release Distribution Artifact Architecture (C24):**
+  - Standalone release packages contain **7 verified assets**: 5 standalone skill archives (`viethoa-*.zip`, `cron-tuning-*.zip`, `fonttv-*.zip`, `bientaptay-*.zip`, `buildpatch-*.zip`), 1 complete monorepo suite archive (`viet-hoa-skills-*.zip`), and 1 cryptographic checksum file (`SHA256SUMS.txt`).
 
 ## [1.0.1] - 2026-10-12
 ### Added

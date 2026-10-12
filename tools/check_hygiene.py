@@ -27,6 +27,8 @@ DISALLOWED_PATTERNS = [
     (r"d:[/\\]steamlibrary", "<STEAM_ROOT>", "Absolute steam library path"),
     (r"[\w\.-]+@(bot\.cue\.im|cue\.im)", "<REDACTED_EMAIL>", "Internal bot email"),
     (r"gho_[a-zA-Z0-9_]{30,}", "<GITHUB_TOKEN_REDACTED>", "Leaked GitHub token"),
+    # C26 Dogfood isolation barrier: prevent internal game project names from leaking into public repo
+    (r"\b(?:Well_Dweller|Third_Crisis|Neon_Night_18|Bo_Teal_Lotus|Apocalypse_with_Femboy)\b", "<INTERNAL_GAME_NAME>", "Internal commercial game workspace leakage"),
 ]
 
 BANNED_EXTENSIONS = {".pyc", ".dll", ".bundle", ".assets", ".exe", ".pak", ".ucas", ".utoc"}

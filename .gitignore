@@ -46,3 +46,7 @@ Desktop.ini
 dist/
 *.zip
 SHA256SUMS.txt
+
+# C26 Dogfood isolation outside repository
+dogfood/
+_dogfood/
