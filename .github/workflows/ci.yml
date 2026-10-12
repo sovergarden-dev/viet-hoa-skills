@@ -6,14 +6,23 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   hygiene-and-contracts:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         with:
           python-version: "3.11"
 
@@ -40,3 +49,22 @@ jobs:
       - name: Lint viethoa Skill Package
         run: |
           python skills/viethoa/scripts/lint_skill_package.py skills/viethoa
+
+  canary-runner:
+    name: Canary Build (Latest Ubuntu Runner)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.11"
+
+      - name: Run Core Test Discover
+        run: |
+          python -m unittest discover -s tools/tests -p "test_*.py"
+          python -m unittest discover -s skills/viethoa/scripts/tests -p "test_*.py"
