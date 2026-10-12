@@ -68,7 +68,7 @@ Không nạp toàn bộ references khi khởi động. Chỉ nạp file tương 
 
 Mọi tiến trình tự động hóa và phân luồng tuân thủ các chỉ dẫn kỹ thuật sau:
 - **Canonical & Exact-Key Merge:** `references/canonical-validation-and-merge-protocol.md` thực thi bắt buộc composite key `(domain, key)` stable key và token verification.
-- **Source-Faithful & Anti-Domestication:** `references/source-faithful-translation-policy.md` và `references/name-provenance-policy.md` bảo vệ proper nouns và thực thể phương Tây khỏi thuần Việt khiên cưỡng.
+- **Source-Faithful & Anti-Domestication:** `references/source-faithful-translation-policy.md` và `references/name-provenance-policy.md` bảo vệ proper nouns và thực thể phương Tây khỏi thuần Việt khiên cưỡng. Rà soát tự động qua `scripts/domestication_detector.py` theo chính sách `references/anti-domestication-corpus.md` và mẫu sổ cái khóa danh xưng `templates/proper-noun-ledger.csv`.
 - **Protected Tokens & Residual QA:** `references/foundational-documents.md` bảo vệ protected tokens và rich-text markup trong runtime QA.
 - **DLC Scope & Game Updates:** `references/game-update-delta-protocol.md` xử lý ranh giới DLC và đối chiếu delta ba phía.
 - **Needs_Context & Triage:** Các hàng chưa rõ ngữ cảnh phân luồng qua `needs_context` triage thay vì suy đoán giới tính/vai trò.

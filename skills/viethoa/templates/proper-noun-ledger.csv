@@ -1,0 +1,6 @@
+key,source,translation_vi,status,domain,rationale
+brand_blackdog,Blackdog,Blackdog,locked,brands,Western brand proper noun - preserve Latin original
+brand_titan_group,Titan Group,Titan Group,locked,brands,Corporate entity proper noun
+name_suzume,Suzume,Suzume,locked,names,Japanese Romaji name - anti-domestication
+name_kazuha,Kazuha,Kazuha,locked,names,Japanese Romaji name - preserve author form
+stat_horny,HORNY,DÂM DỤC,locked,stats,Adult stat - anti-euphemism

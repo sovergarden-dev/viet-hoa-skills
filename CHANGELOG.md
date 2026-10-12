@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- **viethoa**: Expanded anti-domestication detection engine (`domestication_detector.py`) with 19 high-confidence rules across 4 categories (adult euphemisms, western brands, Japanese Romaji names, archaic loanwords), bidirectional NFC normalization, and a paired negative control test suite with 27 controls (0 false-positives):
+  - `references/anti-domestication-corpus.md`: Full policy documentation on IP preservation, Romaji author-intent, and explicit 18+ content fidelity.
+  - `templates/proper-noun-ledger.csv`: Project-level ledger template for locking proper nouns with status and rationale.
 - **fonttv**: Streamlined `SKILL.md` from 14.9 KB to 8.3 KB (below 10 KB budget, C19) by extracting detailed specifications into modular references:
   - `references/unity-tmp-fallback-and-weight-policy.md`: Unity TMP mixed-weight & ransom-note fallback prevention rules.
   - `references/tool-inventory-and-verdicts.md`: Full 7-script audit capability inventory, exit codes `0..4`, and isolated test execution requirements.
