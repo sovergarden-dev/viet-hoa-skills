@@ -1,7 +1,7 @@
 ---
 name: viethoa
 description: "Use when translating a game into Vietnamese end-to-end (source-faithful; anti-domestication)."
-version: 2.24.0
+version: 2.24.1
 contract_version: "1.0.0"
 author: Hermes Agent, sovergarden-dev contributors
 license: MIT

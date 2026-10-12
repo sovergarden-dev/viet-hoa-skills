@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1-rc.2] - 2026-10-13
+
 ### Added
 - **viethoa**: Bổ sung bộ lọc che chắn thẻ định dạng và biến nội suy (`INTERPOLATION_TAG_PATTERN` & `mask_tags_and_placeholders`) bảo toàn chuẩn C28 cho engine Ren'Py (`[player_name]`, `[name!u]`, `[x:.2f]`, `[[...]]`, `{{...}}`, `{color=...}`, `{b}`, `{i}`, `{u}`, `{s}`, `{w}`, `{p}`, `{nw}`, `{fast}`, `{a=...}`), Unity TMP (`<color=...>`, `<style=...>`, `<b>`, `<i>`), và code placeholders (`%(name)s`, `%s`, `{0}`, `${variable}`).
 - **viethoa**: Bổ sung unit test `test_renpy_tag_isolation_and_formatting` bảo đảm đại từ bên trong thẻ không bị bóc tách nhầm thành xưng hô hội thoại.
