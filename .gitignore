@@ -41,3 +41,8 @@ logs/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Release distribution artifacts
+dist/
+*.zip
+SHA256SUMS.txt
