@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- **fonttv**: Streamlined `SKILL.md` from 14.9 KB to 8.3 KB (below 10 KB budget, C19) by extracting detailed specifications into modular references:
+  - `references/unity-tmp-fallback-and-weight-policy.md`: Unity TMP mixed-weight & ransom-note fallback prevention rules.
+  - `references/tool-inventory-and-verdicts.md`: Full 7-script audit capability inventory, exit codes `0..4`, and isolated test execution requirements.
+  - `references/workflow-and-route-lifecycle.md`: Detailed 10-step font engineering lifecycle, route classification (A/B/C), and release proof acceptance gates.
+
 ### Added
 - Status badges in `README.md` (CI passing, Dynamic Release, and MIT License).
 - `.gitignore` rule for release distribution build directory (`dist/`).
