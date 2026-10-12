@@ -18,6 +18,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **P0 Blockers: 0**.
 - **Audited & Approved:** Formally certified under Notion AI Red Team Round 4 verdict `SY07-R4-T6-PCDK-20261012-1BBC`.
 
+## [Unreleased]
+
+### Fixed
+- **viethoa**: Nâng cấp lõi `scripts/pronoun_validator.py` sang kiến trúc Token-Window Standalone Occurrence Matching (`find_standalone_occurrences`), giải quyết triệt để vấn đề over-suppression và false positives trên các cụm từ quan hệ thân tộc.
+- **viethoa**: Bổ sung bộ lọc tiền tố ngữ cảnh `LEFT_MODIFIERS` (`các`, `mấy`, `đám`, `lũ`, `nhóm`, `lời`, `tiếng`, `theo`, `nhờ`) và hậu tố chỉ định `RIGHT_DEMONSTRATIVES` (`ấy`, `đó`, `này`, `kia`), phân biệt chính xác đại từ gọi trực tiếp với danh từ sở hữu/tường thuật ngôi thứ ba (`lời anh dặn`) và đại từ nhóm (`các em`).
+- **viethoa**: Mở rộng `COMPOUND_FALSE_POSITIVES` với các danh từ thân tộc và trạng từ phản thân (`anh trai`, `chị gái`, `em út`, `một mình`, `tự mình`, `chính mình`).
+- **viethoa**: Mở rộng tập từ vựng thân tộc tiếng Việt (`ALL_SELF_PRONOUNS` bổ sung `mẹ, cha, bố, ba, má, thầy, u`; `DIRECT_CALL_PRONOUNS` bổ sung `con, cháu`).
+- **viethoa**: Chuẩn hóa toàn diện hai chiều Unicode theo quy chuẩn C28: so khớp view qua `NFKC + casefold`, xuất bằng chứng và báo cáo giữ 100% chuẩn `NFC`.
+- **viethoa**: Cập nhật tài liệu kỹ thuật `references/pronoun-consistency-policy.md` và bổ sung unit test đối chứng đạt Recall 100% (5/5) trên synthetic injections và Specificity 100% (0/7 FP) trên golden clean rows.
+
 ## [1.1.0-rc.1] - 2026-10-12
 ### ⚠️ Behavioral & Breaking Changes Warning
 - **`domestication_detector.py` Exit Code Behavior:** Scans now exit with status code `1` whenever any violations are detected (previously informative). CI pipelines relying on strict status codes must handle this accordingly.

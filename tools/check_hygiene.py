@@ -94,9 +94,9 @@ def main() -> int:
     total_issues = 0
     files_fixed = 0
 
-    # Scan the entire repository root (excluding .git)
+    # Scan the entire repository root (excluding .git and __pycache__)
     for path in ROOT_DIR.rglob("*"):
-        if not path.is_file() or ".git" in path.parts:
+        if not path.is_file() or ".git" in path.parts or "__pycache__" in path.parts:
             continue
         total_files += 1
 

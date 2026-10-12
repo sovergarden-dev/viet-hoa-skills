@@ -82,16 +82,21 @@ Với các game không có cột `listener` riêng biệt trong bảng text (ch�
 Để triệt tiêu báo lỗi giả (false positive) mà vẫn giữ bộ lọc khắt khe:
 
 1. **Tách biệt chiều gọi trực tiếp (`DIRECT_CALL_PRONOUNS`) và nhắc ngôi thứ ba (`THIRD_PERSON_MENTIONS`):**
-   - Đại từ gọi trực tiếp: `mày, mi, ngươi, em, anh, chị, cô, chú, bác, ông, bà, cậu, bạn, ngài, thầy, sư phụ...` -> Được đối chiếu nghiêm ngặt với `call_pronouns` của ma trận.
+   - Đại từ gọi trực tiếp: `mày, mi, ngươi, em, anh, chị, con, cháu, cô, chú, bác, ông, bà, cậu, bạn, ngài, thầy, sư phụ...` -> Được đối chiếu nghiêm ngặt với `call_pronouns` của ma trận.
    - Đại từ chỉ bên thứ ba vắng mặt / vật thể: `hắn, nó, họ, kẻ đó, gã đó, chúng nó...` -> KHÔNG bị coi là đại từ gọi người nghe; cho phép xuất hiện trong hội thoại hoặc suy nghĩ nội tâm.
-2. **Nhận diện Đại từ Phản thân (`Reflexive Pronoun`):**
-   - Từ `mình` khi đứng sau giới từ hoặc động từ phản thân (`cho mình, với mình, về mình, của mình, ở mình, chằm chằm mình, cho riêng mình, chính mình, tự mình`) được nhận diện là *myself / oneself*, không bị đánh đồng với đại từ xưng/gọi thân mật.
-3. **Miễn trừ Kính ngữ Xã giao (`Polite Honorifics`):**
+2. **Kiểm định Vị trí Token Độc lập (`Token-Window Standalone Occurrence Matching`):**
+   - Khắc phục triệt để lỗi nuốt cả câu (over-suppression) hoặc bắt nhầm cụm từ khi câu xuất hiện nhiều đại từ cùng loại.
+   - **Lớp lọc tiền tố (`LEFT_MODIFIERS`):** `các, mấy, đám, lũ, nhóm, lời, tiếng, theo, nhờ`. Giúp phân biệt rạch ròi giữa việc xưng/gọi trực tiếp với các cấu trúc sở hữu / trích dẫn gián tiếp (như *"nghe lời anh dặn"*, *"theo lời anh dặn"*) và đại từ số nhiều chỉ nhóm (*"dắt theo các em"*).
+   - **Lớp lọc hậu tố chỉ định (`RIGHT_DEMONSTRATIVES`):** `ấy, đó, này, kia`. Tự động miễn trừ ngôi thứ ba chỉ định như *"em ấy", "anh ấy", "cô ấy"* khi dùng đại từ thân tộc, tránh nhầm lẫn với đại từ gọi trực tiếp người nghe.
+   - **Lớp lọc đặc tính thân tộc (`RIGHT_KINSHIP_TRAITS`):** `trai, gái, cả, hai, ba, út, họ, dâu, rể`. Tự động nhận diện các danh từ ghép quan hệ gia đình như *"anh trai", "chị gái", "em út"*.
+3. **Nhận diện Đại từ Phản thân (`Reflexive Pronoun`):**
+   - Từ `mình` khi đứng sau giới từ hoặc động từ tri giác/phản thân (`thấy mình, cảm thấy mình, nghĩ mình, cho mình, với mình, về mình, của mình, ở mình, cho riêng mình, chính mình, tự mình, một mình`) được nhận diện là *myself / oneself*, không bị đánh đồng với đại từ xưng/gọi thân mật.
+4. **Miễn trừ Kính ngữ Xã giao (`Polite Honorifics`):**
    - Các cụm `thưa bà, thưa ông, thưa ngài, thưa cô, thưa thầy` được tự động chấp thuận khi đối thoại với bậc trên hoặc khách hàng.
-4. **Bộ lọc Cụm danh từ / Phân loại từ (`COMPOUND_FALSE_POSITIVES`):**
-   - Danh từ ghép và chỉ loại: `con đường, con mắt, con dao, cô đơn, cô giáo, anh hùng, chú ý, bác sĩ...`
+5. **Bộ lọc Cụm danh từ / Phân loại từ (`COMPOUND_FALSE_POSITIVES`):**
+   - Danh từ ghép và chỉ loại: `con đường, con mắt, con dao, cô đơn, cô giáo, anh hùng, chú ý, bác sĩ, một mình, tự mình, chính mình, anh trai, chị gái, em út...`
    - Phân loại đặc thù / lăng mạ trong game 18+: `cô thỏ, con đĩ, con khốn, con ranh, con điếm, thằng cha, thằng khốn...`
-   - Tất cả đều được che chắn (masking) chính xác độ dài trước khi quét đại từ đơn.
+   - Chuẩn hóa hai chiều C28: So khớp thông qua góc nhìn `NFKC + casefold`, nhưng báo cáo vi phạm và dữ liệu xuất luôn bảo tồn 100% dạng chuẩn `NFC` nguyên gốc.
 
 ---
 

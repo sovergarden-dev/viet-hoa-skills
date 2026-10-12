@@ -274,6 +274,165 @@ class TestPronounValidator(unittest.TestCase):
         # Verify canonical file was byte-identical after scan
         self.assertEqual(csv_file.read_bytes(), orig_bytes)
 
+    def test_directional_kinship_and_false_positive_guardrails(self) -> None:
+        """Verify directional kinship validation with 100% recall on synthetic errors and 0 FP on clean phrasing."""
+        kinship_matrix = {
+            "$schema": "viethoa/pronoun-matrix/v1",
+            "project": "KinshipHarness",
+            "version": "1.0.0",
+            "characters": {
+                "MotherEntity": {"gender": "female", "age_group": "adult", "role": "mother"},
+                "ChildEntity": {"gender": "choice", "age_group": "child", "role": "protagonist"},
+                "ElderBrotherEntity": {"gender": "male", "age_group": "young_adult", "role": "elder_brother"},
+                "YoungerSiblingEntity": {"gender": "unknown", "age_group": "child", "role": "younger_sibling"},
+                "UnknownEntity": {"gender": "unknown", "age_group": "unknown", "role": "npc"},
+            },
+            "matrices": [
+                {
+                    "speaker": "MotherEntity",
+                    "listener": "ChildEntity",
+                    "stage": "all",
+                    "self_pronouns": ["mẹ"],
+                    "call_pronouns": ["con", "các con"],
+                    "emotion_exceptions": {},
+                },
+                {
+                    "speaker": "ChildEntity",
+                    "listener": "MotherEntity",
+                    "stage": "all",
+                    "self_pronouns": ["con"],
+                    "call_pronouns": ["mẹ"],
+                    "emotion_exceptions": {},
+                },
+                {
+                    "speaker": "ElderBrotherEntity",
+                    "listener": "YoungerSiblingEntity",
+                    "stage": "all",
+                    "self_pronouns": ["anh"],
+                    "call_pronouns": ["em", "các em"],
+                    "emotion_exceptions": {},
+                },
+            ],
+            "special_rules": {
+                "forbidden_gendered_pronouns_for_unknown": ["anh", "chị", "ông", "bà"],
+                "allowed_neutral_pronouns_for_unknown": ["bạn", "người", "cậu"],
+                "group_call_pronouns": ["các con", "các em", "mọi người"],
+            },
+        }
+
+        # 1. Synthetic Dirty Injections (Must be caught with 100% Recall)
+        dirty_rows = [
+            {
+                "key": "d40",
+                "speaker": "MotherEntity",
+                "listener": "ChildEntity",
+                "source": "Maybe take your siblings with you...",
+                "target": "Và có lẽ em nên dắt theo các em trong chuyến phiêu lưu nhỏ này.",
+            },
+            {
+                "key": "d42",
+                "speaker": "MotherEntity",
+                "listener": "ChildEntity",
+                "source": "Follow your brother, he will protect you.",
+                "target": "Nào các con, hãy đi theo anh trai và nghe lời anh dặn, anh sẽ bảo vệ các con.",
+            },
+            {
+                "key": "d53",
+                "speaker": "MotherEntity",
+                "listener": "ChildEntity",
+                "source": "If you see berries, grab some for me.",
+                "target": "Em chỉ đang nghĩ, lỡ anh có thấy mấy quả mọng trên đĩa, anh có thể lấy thêm vài quả về cho em không?",
+            },
+            {
+                "key": "d54",
+                "speaker": "MotherEntity",
+                "listener": "ChildEntity",
+                "source": "I crave berries lately.",
+                "target": "Dạo này em đang ghiền quả mọng lắm.",
+            },
+            {
+                "key": "d55",
+                "speaker": "ElderBrotherEntity",
+                "listener": "YoungerSiblingEntity",
+                "source": "Be careful! You could break the egg.",
+                "target": "Này, cẩn thận với em ấy chứ! Cậu có thể làm vỡ vỏ trứng của em ấy đấy.",
+            },
+        ]
+        res_dirty = pv.scan_dialogue_rows(dirty_rows, kinship_matrix)
+        self.assertEqual(res_dirty["drift_count"], 5)
+        violations_map = {v["key"]: v for v in res_dirty["violations"]}
+
+        # d40: mother falsely uses self 'em'
+        self.assertIn("em", violations_map["d40"]["unauthorized_self"])
+        # d42: mother falsely uses 'anh'
+        self.assertTrue(
+            "anh" in violations_map["d42"]["unauthorized_self"]
+            or "anh" in violations_map["d42"]["unauthorized_call"]
+        )
+        # d53: mother falsely uses self 'em' and call 'anh'
+        self.assertIn("em", violations_map["d53"]["unauthorized_self"])
+        self.assertIn("anh", violations_map["d53"]["unauthorized_call"])
+        # d54: mother falsely uses self 'em'
+        self.assertIn("em", violations_map["d54"]["unauthorized_self"])
+        # d55: elder brother calls sibling 'cậu'
+        self.assertIn("cậu", violations_map["d55"]["unauthorized_call"])
+
+        # 2. Golden Clean Rows (Must produce 0 False Positives)
+        clean_rows = [
+            {
+                "key": "c40",
+                "speaker": "MotherEntity",
+                "listener": "ChildEntity",
+                "source": "Maybe take your siblings with you...",
+                "target": "Ôi! Và có lẽ con nên dắt theo các em trong chuyến phiêu lưu nhỏ này.",
+            },
+            {
+                "key": "c42",
+                "speaker": "MotherEntity",
+                "listener": "ChildEntity",
+                "source": "Follow your brother and listen to him.",
+                "target": "Nào các con, hãy đi theo anh trai và nghe lời anh dặn nhé!",
+            },
+            {
+                "key": "c49",
+                "speaker": "ChildEntity",
+                "listener": "MotherEntity",
+                "source": "Will it be safe for me to go out alone?",
+                "target": "Mẹ có chắc là con ra ngoài đó một mình sẽ an toàn không?",
+            },
+            {
+                "key": "c50",
+                "speaker": "ChildEntity",
+                "listener": "MotherEntity",
+                "source": "I don't feel ready.",
+                "target": "Con thấy mình chưa thật sự sẵn sàng cho chuyện đó đâu.",
+            },
+            {
+                "key": "c53",
+                "speaker": "MotherEntity",
+                "listener": "ChildEntity",
+                "source": "If you see berries, grab some for mother.",
+                "target": "Mẹ chỉ đang nghĩ, ngộ nhỡ con thấy mấy quả mọng... con có thể lấy thêm vài quả về cho mẹ được không?",
+            },
+            {
+                "key": "c54",
+                "speaker": "MotherEntity",
+                "listener": "ChildEntity",
+                "source": "Mother craves berries.",
+                "target": "Dạo này mẹ thèm quả mọng quá chừng.",
+            },
+            {
+                "key": "c55",
+                "speaker": "ElderBrotherEntity",
+                "listener": "YoungerSiblingEntity",
+                "source": "Be careful with him! You kids might break the egg.",
+                "target": "Này, cẩn thận với em ấy chứ! Các em làm vỡ vỏ trứng của nó bây giờ.",
+            },
+        ]
+        res_clean = pv.scan_dialogue_rows(clean_rows, kinship_matrix)
+        self.assertEqual(res_clean["drift_count"], 0)
+        self.assertEqual(len(res_clean["violations"]), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

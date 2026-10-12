@@ -17,6 +17,7 @@ import csv
 import io
 import json
 import re
+import unicodedata
 from pathlib import Path
 from typing import Any
 
@@ -25,13 +26,14 @@ SCHEMA = "viethoa/pronoun-consistency-validator/v1"
 # Common personal pronouns in Vietnamese
 ALL_SELF_PRONOUNS = {
     "tôi", "tao", "ta", "em", "anh", "chị", "con", "cháu", "ông", "bà",
+    "mẹ", "cha", "bố", "ba", "má", "thầy", "u",
     "mình", "tớ", "chúng tôi", "chúng tao", "chúng ta", "chúng em", "chúng mình",
     "bần đạo", "lão phu", "tiểu bối", "bổn tọa", "trẫm"
 }
 
 # Second-person direct addressee pronouns (used to call the listener directly)
 DIRECT_CALL_PRONOUNS = {
-    "mày", "mi", "ngươi", "em", "anh", "chị", "cô", "chú", "bác", "ông", "bà",
+    "mày", "mi", "ngươi", "em", "anh", "chị", "con", "cháu", "cô", "chú", "bác", "ông", "bà",
     "cậu", "bạn", "ngài", "thầy", "sư phụ", "chàng", "nàng",
     "các bạn", "mọi người", "các ngươi", "chúng mày", "quý vị", "toàn đội"
 }
@@ -51,24 +53,64 @@ COMPOUND_FALSE_POSITIVES = {
     "cô thỏ", "cậu nhóc",
     "cô đơn", "cô độc", "cô lập", "cô giáo", "cô bé", "cô dâu", "cô ả",
     "anh dũng", "anh hùng", "anh minh", "anh rể", "anh họ", "anh em",
-    "chị dâu", "chị họ", "chị em",
-    "em gái", "em trai", "em họ",
+    "anh trai", "anh cả", "anh hai", "chị dâu", "chị họ", "chị em", "chị gái", "chị cả", "chị hai",
+    "em gái", "em trai", "em họ", "em út",
+    "một mình", "tự mình", "chính mình", "bản thân mình", "cho riêng mình",
     "bác bỏ", "bác ái", "bác học", "bác sĩ",
     "chú ý", "chú giải", "chú trọng", "chú tâm", "chú rể", "chú bé",
     "ông tơ", "bà chúa", "bà mối", "ông trùm", "ông bà", "ông già", "bà già",
     "thằng cha", "thằng khốn", "thằng nhãi", "thằng bé", "thằng dốt"
 }
+COMPOUND_FALSE_POSITIVES_VIEW = {unicodedata.normalize("NFKC", c).casefold() for c in COMPOUND_FALSE_POSITIVES}
+
+LEFT_MODIFIERS = {"các", "mấy", "đám", "lũ", "nhóm", "lời", "tiếng", "theo", "nhờ"}
+RIGHT_DEMONSTRATIVES = {"ấy", "đó", "này", "kia"}
+RIGHT_KINSHIP_TRAITS = {"trai", "gái", "cả", "hai", "ba", "út", "họ", "dâu", "rể"}
+
+
+def find_standalone_occurrences(text: str, pronoun: str, allow_demonstratives: bool = True) -> list[int]:
+    """Find token indices of a pronoun that appear standalone, filtering out modifiers, compounds, and demonstratives."""
+    norm_text = unicodedata.normalize("NFKC", text).casefold()
+    p_norm = unicodedata.normalize("NFKC", pronoun).casefold()
+    words = re.findall(r"\b[a-zà-ỹđ0-9_-]+\b", norm_text)
+    indices = []
+    for i, w in enumerate(words):
+        if w != p_norm:
+            continue
+        prev_w = words[i - 1] if i > 0 else ""
+        next_w = words[i + 1] if i + 1 < len(words) else ""
+
+        # Check bigrams in compounds
+        if prev_w and f"{prev_w} {w}" in COMPOUND_FALSE_POSITIVES_VIEW:
+            continue
+        if next_w and f"{w} {next_w}" in COMPOUND_FALSE_POSITIVES_VIEW:
+            continue
+        # Check left modifier context (group quantifiers, reportive possessives)
+        if prev_w in LEFT_MODIFIERS:
+            continue
+        # Check right demonstratives (kinship/title pronouns only, when allowed)
+        if allow_demonstratives and p_norm in {"anh", "em", "chị", "cô", "chú", "bác", "ông", "bà", "cậu", "bạn", "con", "cháu"} and next_w in RIGHT_DEMONSTRATIVES:
+            continue
+        # Check right kinship traits
+        if p_norm in {"anh", "chị", "em"} and next_w in RIGHT_KINSHIP_TRAITS:
+            continue
+
+        indices.append(i)
+    return indices
 
 
 def extract_pronouns(text: str) -> dict[str, set[str]]:
     """Extract candidate self and call pronouns from Vietnamese text, suppressing common compounds."""
-    cleaned = text.lower()
+    norm_text = unicodedata.normalize("NFKC", text).casefold()
+    cleaned = norm_text
+
     # Suppress known compound phrases by masking them with whitespace of exact length
     for comp in COMPOUND_FALSE_POSITIVES:
-        if comp in cleaned:
-            cleaned = cleaned.replace(comp, " " * len(comp))
+        comp_norm = unicodedata.normalize("NFKC", comp).casefold()
+        if comp_norm in cleaned:
+            cleaned = cleaned.replace(comp_norm, " " * len(comp_norm))
 
-    words = re.findall(r"\b[a-zà-ỹA-ZÀ-Ỹ0-9_-]+\b", cleaned)
+    words = re.findall(r"\b[a-zà-ỹđ0-9_-]+\b", cleaned)
     found_self = set()
     found_call = set()
 
@@ -80,10 +122,12 @@ def extract_pronouns(text: str) -> dict[str, set[str]]:
 
     # Check two-word phrases like "chúng tôi", "các bạn", "sư phụ", etc.
     for phrase in ALL_SELF_PRONOUNS:
-        if " " in phrase and re.search(rf"\b{re.escape(phrase)}\b", cleaned):
+        phrase_norm = unicodedata.normalize("NFKC", phrase).casefold()
+        if " " in phrase_norm and re.search(rf"\b{re.escape(phrase_norm)}\b", cleaned):
             found_self.add(phrase)
     for phrase in ALL_CALL_PRONOUNS:
-        if " " in phrase and re.search(rf"\b{re.escape(phrase)}\b", cleaned):
+        phrase_norm = unicodedata.normalize("NFKC", phrase).casefold()
+        if " " in phrase_norm and re.search(rf"\b{re.escape(phrase_norm)}\b", cleaned):
             found_call.add(phrase)
 
     return {"self": found_self, "call": found_call}
@@ -174,7 +218,14 @@ def scan_dialogue_rows(
         if l_low and l_low in characters:
             listener_meta = characters[l_low]
             if listener_meta.get("gender") == "unknown":
-                gendered_used = found_call.intersection(forbidden_gendered)
+                gendered_used = set()
+                for p in found_call.intersection(forbidden_gendered):
+                    # Suppress false positives on compounds and modifier contexts (e.g. "lời anh", "anh trai")
+                    # but strictly forbid gendered demonstratives (e.g. "cô ấy") when speaking to unknown-gender entities
+                    if not find_standalone_occurrences(target, p, allow_demonstratives=False):
+                        continue
+                    gendered_used.add(p)
+
                 if gendered_used:
                     violations.append({
                         "key": key,
@@ -236,14 +287,20 @@ def scan_dialogue_rows(
 
         # Disallow unauthorized self-pronouns that violate the matrix
         unauthorized_self = set()
+        has_valid_self = bool(found_self.intersection(allowed_self))
         for p in found_self:
             if p not in allowed_self and p not in allowed_call:
                 # "mình" can serve as a reflexive pronoun (equivalent to oneself/myself)
                 if p == "mình":
-                    # If target uses "mình" after a preposition or verb, or with modifiers (e.g., "cho riêng mình", "với chính mình", "chằm chằm mình"), treat as reflexive
-                    if re.search(r"\b(cho|với|về|của|ở|chằm chằm|vào|đến)\s+(?:riêng\s+|chính\s+|tự\s+)?mình\b|\b(?:riêng|chính|tự)\s+mình\b", target.lower()):
+                    # If target already has an authorized self pronoun AND mình appears after perception verbs / prepositions
+                    if has_valid_self and re.search(r"\b(thấy|cảm thấy|nhận thấy|nghĩ|coi|xem|cho|với|về|của|ở|chằm chằm|vào|đến)\s+(?:riêng\s+|chính\s+|tự\s+)?mình\b", target.lower()):
                         continue
-                if p in {"tao", "tôi", "em", "anh", "con", "cháu", "mình", "tớ"}:
+                    if re.search(r"\b(cho|với|về|của|ở|chằm chằm|vào|đến|thấy|cảm thấy|nghĩ|coi|xem|một|tự|chính|riêng)\s+(?:riêng\s+|chính\s+|tự\s+)?mình\b|\b(?:riêng|chính|tự|một)\s+mình\b", target.lower()):
+                        continue
+                # Suppress if pronoun only appears in authorized modifier contexts (e.g. "lời anh", "các em", "em ấy")
+                if not find_standalone_occurrences(target, p):
+                    continue
+                if p in {"tao", "tôi", "em", "anh", "chị", "con", "cháu", "mẹ", "cha", "bố", "ba", "má", "mình", "tớ"}:
                     unauthorized_self.add(p)
 
         # Disallow unauthorized 2nd-person direct addressee call-pronouns that violate the matrix
@@ -254,7 +311,11 @@ def scan_dialogue_rows(
                 # Polite honorific address like "thưa bà", "thưa ông" is permitted when addressing elders/superiors
                 if p in {"ông", "bà"} and ("thưa bà" in target.lower() or "thưa ông" in target.lower()):
                     continue
-                if p in {"mày", "mi", "ngươi", "cô", "chú", "bác", "ông", "bà"}:
+                # Suppress if pronoun only appears in authorized modifier contexts (e.g. "lời anh", "các em", "em ấy")
+                if not find_standalone_occurrences(target, p):
+                    continue
+                # Flag direct address call pronouns that violate relationship matrix
+                if p in {"mày", "mi", "ngươi", "cô", "chú", "bác", "ông", "bà", "cậu", "bạn", "anh", "em", "chị", "con", "cháu"}:
                     unauthorized_call.add(p)
 
         if unauthorized_self or unauthorized_call:
