@@ -18,6 +18,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **P0 Blockers: 0**.
 - **Audited & Approved:** Formally certified under Notion AI Red Team Round 4 verdict `SY07-R4-T6-PCDK-20261012-1BBC`.
 
+## [Unreleased]
+
+### Added
+- **viethoa**: Mở rộng bộ kiểm thử hồi quy `skills/viethoa/scripts/tests/test_pronoun_validator.py` lên 32 ca lỗi synthetic và 52 ca chuẩn đối chứng (phủ toàn diện các bẫy từ đồng âm `con, ba, u, thầy, cháu`).
+- **viethoa**: Bổ sung kiểm thử byte-exact Unicode NFC cho chuẩn C28, đảm bảo trường dữ liệu báo cáo luôn giữ nguyên dạng NFC bất biến kể cả khi nạp input NFD decomposed.
+- **ci**: Ghim runner cố định `ubuntu-24.04 LTS`, thiết lập timeout 10 phút, ghim SHA commit cho `actions/checkout@11bd719` (# v4.2.2) và `actions/setup-python@4237552` (# v5.4.0), bổ sung job `canary-runner` trên `ubuntu-latest` (`continue-on-error: true`) và `.github/dependabot.yml`.
+- **docs**: Ghi nhận phán quyết chính thức Notion AI Red Team Round 5 (`SY07-R5-T7-PCDK-20261012-E86E`).
+
+### Fixed
+- **viethoa**: Tái cấu trúc thứ tự ưu tiên trong `scan_dialogue_rows`: tra cứu ma trận quan hệ 6 cấp (`best_rule`) trước khi áp dụng rào chắn giới tính chưa xác định (`Unknown-Gender Guardrail`), tự động miễn trừ đại từ tự xưng hợp lệ của người nói (`allowed_self`).
+- **viethoa**: Nâng cấp thuật toán `find_standalone_occurrences` kiểm tra trên chuỗi token gốc, phân biệt triệt để số từ `ba` (trước phân loại từ số lượng), danh từ thân tộc người cha `ba` (trước hạt hô ngữ), danh từ 1 ký tự `u` (trước từ tình thái mẹ), và cụm đại từ tập thể/phản thân (`anh em mình`, `tâm hồn mình`).
+
 ## [1.1.1-rc.1] - 2026-10-12
 
 ### Fixed

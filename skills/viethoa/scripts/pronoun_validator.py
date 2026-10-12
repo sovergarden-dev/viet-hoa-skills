@@ -59,17 +59,31 @@ COMPOUND_FALSE_POSITIVES = {
     "bác bỏ", "bác ái", "bác học", "bác sĩ",
     "chú ý", "chú giải", "chú trọng", "chú tâm", "chú rể", "chú bé",
     "ông tơ", "bà chúa", "bà mối", "ông trùm", "ông bà", "ông già", "bà già",
-    "thằng cha", "thằng khốn", "thằng nhãi", "thằng bé", "thằng dốt"
+    "thằng cha", "thằng khốn", "thằng nhãi", "thằng bé", "thằng dốt",
+    "u uất", "u ám", "u cục", "khối u", "u xơ", "u não", "u nang", "u tối", "u mê", "u sầu",
+    "ba mươi", "ba trăm", "ba nghìn", "ba vạn", "ba triệu",
+    "người bạn", "đứa bạn", "bạn cũ", "bạn bè", "bạn học", "bạn thân", "nhóm bạn", "đám bạn",
+    "bác ba", "chú ba", "cô ba", "cậu ba", "anh ba", "chị ba", "bác hai", "chú hai", "cô hai", "anh hai", "chị hai",
+    "anh em mình", "chị em mình", "chúng mình", "cả nhà mình", "nhà mình",
+    "tâm hồn mình", "trái tim mình", "tấm lòng mình", "tâm trạng mình", "cơ thể mình",
+    "ba người", "ba đứa", "ba quả", "ba cái", "ba chiếc", "ba bạn", "ba ngày", "ba năm", "ba tháng", "ba giờ", "ba tuần", "ba lần", "ba con",
+    "ngõ nhà", "nhà chú", "nhà cô", "nhà bác", "nhà anh", "nhà chị", "nhà em"
 }
 COMPOUND_FALSE_POSITIVES_VIEW = {unicodedata.normalize("NFKC", c).casefold() for c in COMPOUND_FALSE_POSITIVES}
 
 LEFT_MODIFIERS = {"các", "mấy", "đám", "lũ", "nhóm", "lời", "tiếng", "theo", "nhờ"}
 RIGHT_DEMONSTRATIVES = {"ấy", "đó", "này", "kia"}
 RIGHT_KINSHIP_TRAITS = {"trai", "gái", "cả", "hai", "ba", "út", "họ", "dâu", "rể"}
+NUMBER_CLASSIFIERS = {
+    "người", "đứa", "cái", "quả", "chiếc", "bạn", "tháng", "năm", "ngày",
+    "giờ", "tuần", "lần", "phút", "mươi", "trăm", "nghìn", "vạn", "triệu", "tỷ",
+    "viên", "bát", "chén", "ly", "cốc", "hạt", "cây", "bông"
+}
+ORDINAL_OR_RANK_PREV = {"anh", "chị", "em", "chú", "bác", "cô", "cậu", "thứ", "hạng", "số", "top"}
 
 
 def find_standalone_occurrences(text: str, pronoun: str, allow_demonstratives: bool = True) -> list[int]:
-    """Find token indices of a pronoun that appear standalone, filtering out modifiers, compounds, and demonstratives."""
+    """Find token indices of a pronoun that appear standalone on ORIGINAL tokens, filtering out modifiers, compounds, and demonstratives."""
     norm_text = unicodedata.normalize("NFKC", text).casefold()
     p_norm = unicodedata.normalize("NFKC", pronoun).casefold()
     words = re.findall(r"\b[a-zà-ỹđ0-9_-]+\b", norm_text)
@@ -80,20 +94,48 @@ def find_standalone_occurrences(text: str, pronoun: str, allow_demonstratives: b
         prev_w = words[i - 1] if i > 0 else ""
         next_w = words[i + 1] if i + 1 < len(words) else ""
 
-        # Check bigrams in compounds
+        # Check bigrams in compounds on original tokens
         if prev_w and f"{prev_w} {w}" in COMPOUND_FALSE_POSITIVES_VIEW:
             continue
         if next_w and f"{w} {next_w}" in COMPOUND_FALSE_POSITIVES_VIEW:
             continue
+        # Check trigram compounds (e.g. "anh em mình", "tâm hồn mình", "cả nhà mình")
+        prev2_w = words[i - 2] if i > 1 else ""
+        if prev2_w and prev_w and f"{prev2_w} {prev_w} {w}" in COMPOUND_FALSE_POSITIVES_VIEW:
+            continue
+        next2_w = words[i + 2] if i + 2 < len(words) else ""
+        if next_w and next2_w and f"{w} {next_w} {next2_w}" in COMPOUND_FALSE_POSITIVES_VIEW:
+            continue
+
         # Check left modifier context (group quantifiers, reportive possessives)
         if prev_w in LEFT_MODIFIERS:
             continue
         # Check right demonstratives (kinship/title pronouns only, when allowed)
         if allow_demonstratives and p_norm in {"anh", "em", "chị", "cô", "chú", "bác", "ông", "bà", "cậu", "bạn", "con", "cháu"} and next_w in RIGHT_DEMONSTRATIVES:
             continue
-        # Check right kinship traits
-        if p_norm in {"anh", "chị", "em"} and next_w in RIGHT_KINSHIP_TRAITS:
+        # 3rd-person mention with 'nó'/'hắn' for kinship (e.g. "cháu nó", "con nó", "em nó")
+        if allow_demonstratives and p_norm in {"cháu", "con", "em"} and next_w in {"nó", "hắn"}:
             continue
+        # Check right kinship traits for all kinship titles
+        if p_norm in {"anh", "chị", "em", "cô", "chú", "bác", "ông", "bà", "cậu"} and next_w in RIGHT_KINSHIP_TRAITS:
+            continue
+
+        # Disambiguate 'ba': numeral / ordinal rank vs kinship father
+        if p_norm == "ba":
+            if next_w in {"ơi", "à", "ạ", "hỡi"}:
+                pass
+            elif prev_w in ORDINAL_OR_RANK_PREV:
+                continue
+            elif next_w in NUMBER_CLASSIFIERS:
+                continue
+            elif prev_w in {"một", "hai", "bốn", "năm"}:
+                continue
+
+        # Disambiguate 'u': single letter word vs maternal kinship
+        if p_norm == "u":
+            vocative_hints = {"ơi", "à", "ạ", "hỡi", "con", "cháu", "lạy", "thưa", "thương", "nuôi", "đẻ"}
+            if prev_w not in vocative_hints and next_w not in vocative_hints:
+                continue
 
         indices.append(i)
     return indices
@@ -104,9 +146,10 @@ def extract_pronouns(text: str) -> dict[str, set[str]]:
     norm_text = unicodedata.normalize("NFKC", text).casefold()
     cleaned = norm_text
 
-    # Suppress known compound phrases by masking them with whitespace of exact length
-    for comp in COMPOUND_FALSE_POSITIVES:
-        comp_norm = unicodedata.normalize("NFKC", comp).casefold()
+    # Suppress known compound phrases by masking them with whitespace of exact length,
+    # sorting by length descending so longer idioms (e.g. "anh em mình") are masked before sub-compounds ("anh em")
+    sorted_compounds = sorted(COMPOUND_FALSE_POSITIVES_VIEW, key=len, reverse=True)
+    for comp_norm in sorted_compounds:
         if comp_norm in cleaned:
             cleaned = cleaned.replace(comp_norm, " " * len(comp_norm))
 
@@ -175,7 +218,8 @@ def scan_dialogue_rows(
     characters = {k.strip().lower(): v for k, v in matrix_data.get("characters", {}).items()}
     special_rules = matrix_data.get("special_rules", {})
 
-    forbidden_gendered = set(special_rules.get("forbidden_gendered_pronouns_for_unknown", []))
+    DEFAULT_FORBIDDEN_GENDERED = {"anh", "chị", "cô", "chú", "bác", "ông", "bà"}
+    forbidden_gendered = set(special_rules.get("forbidden_gendered_pronouns_for_unknown", DEFAULT_FORBIDDEN_GENDERED))
     group_call_pronouns = set(special_rules.get("group_call_pronouns", []))
 
     # Index matrix rules by (speaker, listener, stage)
@@ -209,38 +253,14 @@ def scan_dialogue_rows(
             continue
 
         scanned_dialogue_count += 1
+        # C28 Guarantee: strictly normalize target and source to Unicode NFC for audit & reporting
+        target = unicodedata.normalize("NFC", target)
+        source = unicodedata.normalize("NFC", source)
         extracted = extract_pronouns(target)
         found_self = extracted["self"]
         found_call = extracted["call"]
 
-        # Rule Check 1: Unknown-gender character protection on listener
-        l_low = listener.lower() if listener else ""
-        if l_low and l_low in characters:
-            listener_meta = characters[l_low]
-            if listener_meta.get("gender") == "unknown":
-                gendered_used = set()
-                for p in found_call.intersection(forbidden_gendered):
-                    # Suppress false positives on compounds and modifier contexts (e.g. "lời anh", "anh trai")
-                    # but strictly forbid gendered demonstratives (e.g. "cô ấy") when speaking to unknown-gender entities
-                    if not find_standalone_occurrences(target, p, allow_demonstratives=False):
-                        continue
-                    gendered_used.add(p)
-
-                if gendered_used:
-                    violations.append({
-                        "key": key,
-                        "speaker": speaker,
-                        "listener": listener,
-                        "source": source,
-                        "target": target,
-                        "issue_type": "gendered_pronoun_on_unknown",
-                        "severity": "high",
-                        "evidence": f"Used gendered call pronouns {sorted(gendered_used)} for unknown-gender listener '{listener}'",
-                        "allowed": sorted(special_rules.get("allowed_neutral_pronouns_for_unknown", [])),
-                    })
-                    continue
-
-        # Rule Check 2: Deterministic 6-tier precedence lookup for directional rules
+        # Rule Check 2 (Resolved FIRST): Deterministic 6-tier precedence lookup for directional rules
         s_low = speaker.lower()
         l_low = listener.lower() if listener else "*"
 
@@ -261,29 +281,61 @@ def scan_dialogue_rows(
                 matched_precedence_tier = tier
                 break
 
+        allowed_self = set(best_rule.get("self_pronouns", [])) if best_rule else set()
+        allowed_call = set(best_rule.get("call_pronouns", [])) if best_rule else set()
+
+        if best_rule:
+            emotion_exceptions = best_rule.get("emotion_exceptions", {})
+            matched_emotion_key = None
+            for emo_k in emotion_exceptions:
+                if emo_k in emotion:
+                    matched_emotion_key = emo_k
+                    break
+
+            if matched_emotion_key:
+                emo_rule = emotion_exceptions[matched_emotion_key]
+                allowed_self.update(emo_rule.get("self_pronouns", []))
+                allowed_call.update(emo_rule.get("call_pronouns", []))
+
+            # Allow universal group call pronouns
+            allowed_call.update(group_call_pronouns)
+
+        # Rule Check 1: Unknown-gender character protection on listener
+        # Evaluated across all lines addressing unknown-gender characters (even without directional rules)
+        # but exempting speaker's authorized self-pronouns (e.g. ElderBrother saying "anh")
+        l_low_char = listener.lower() if listener else ""
+        if l_low_char and l_low_char in characters:
+            listener_meta = characters[l_low_char]
+            if listener_meta.get("gender") == "unknown":
+                gendered_used = set()
+                for p in found_call.intersection(forbidden_gendered):
+                    # Do not flag speaker's authorized self-pronouns or authorized call-pronouns
+                    if p in allowed_self or p in allowed_call:
+                        continue
+                    # Suppress false positives on compounds and modifier contexts (e.g. "lời anh", "anh trai")
+                    # but strictly forbid gendered demonstratives (e.g. "cô ấy") when speaking to unknown-gender entities
+                    if not find_standalone_occurrences(target, p, allow_demonstratives=False):
+                        continue
+                    gendered_used.add(p)
+
+                if gendered_used:
+                    violations.append({
+                        "key": key,
+                        "speaker": speaker,
+                        "listener": listener,
+                        "source": source,
+                        "target": target,
+                        "issue_type": "gendered_pronoun_on_unknown",
+                        "severity": "high",
+                        "evidence": f"Used gendered call pronouns {sorted(gendered_used)} for unknown-gender listener '{listener}'",
+                        "allowed": sorted(special_rules.get("allowed_neutral_pronouns_for_unknown", [])),
+                    })
+                    continue
+
         if not best_rule:
             if listener:
                 unmatched_pairs_count += 1
             continue
-
-        allowed_self = set(best_rule.get("self_pronouns", []))
-        allowed_call = set(best_rule.get("call_pronouns", []))
-
-        # Check emotion exceptions
-        emotion_exceptions = best_rule.get("emotion_exceptions", {})
-        matched_emotion_key = None
-        for emo_k in emotion_exceptions:
-            if emo_k in emotion:
-                matched_emotion_key = emo_k
-                break
-
-        if matched_emotion_key:
-            emo_rule = emotion_exceptions[matched_emotion_key]
-            allowed_self.update(emo_rule.get("self_pronouns", []))
-            allowed_call.update(emo_rule.get("call_pronouns", []))
-
-        # Allow universal group call pronouns
-        allowed_call.update(group_call_pronouns)
 
         # Disallow unauthorized self-pronouns that violate the matrix
         unauthorized_self = set()

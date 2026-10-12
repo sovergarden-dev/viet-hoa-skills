@@ -89,14 +89,20 @@ Với các game không có cột `listener` riêng biệt trong bảng text (ch�
    - **Lớp lọc tiền tố (`LEFT_MODIFIERS`):** `các, mấy, đám, lũ, nhóm, lời, tiếng, theo, nhờ`. Giúp phân biệt rạch ròi giữa việc xưng/gọi trực tiếp với các cấu trúc sở hữu / trích dẫn gián tiếp (như *"nghe lời anh dặn"*, *"theo lời anh dặn"*) và đại từ số nhiều chỉ nhóm (*"dắt theo các em"*).
    - **Lớp lọc hậu tố chỉ định (`RIGHT_DEMONSTRATIVES`):** `ấy, đó, này, kia`. Tự động miễn trừ ngôi thứ ba chỉ định như *"em ấy", "anh ấy", "cô ấy"* khi dùng đại từ thân tộc, tránh nhầm lẫn với đại từ gọi trực tiếp người nghe.
    - **Lớp lọc đặc tính thân tộc (`RIGHT_KINSHIP_TRAITS`):** `trai, gái, cả, hai, ba, út, họ, dâu, rể`. Tự động nhận diện các danh từ ghép quan hệ gia đình như *"anh trai", "chị gái", "em út"*.
-3. **Nhận diện Đại từ Phản thân (`Reflexive Pronoun`):**
-   - Từ `mình` khi đứng sau giới từ hoặc động từ tri giác/phản thân (`thấy mình, cảm thấy mình, nghĩ mình, cho mình, với mình, về mình, của mình, ở mình, cho riêng mình, chính mình, tự mình, một mình`) được nhận diện là *myself / oneself*, không bị đánh đồng với đại từ xưng/gọi thân mật.
-4. **Miễn trừ Kính ngữ Xã giao (`Polite Honorifics`):**
-   - Các cụm `thưa bà, thưa ông, thưa ngài, thưa cô, thưa thầy` được tự động chấp thuận khi đối thoại với bậc trên hoặc khách hàng.
-5. **Bộ lọc Cụm danh từ / Phân loại từ (`COMPOUND_FALSE_POSITIVES`):**
-   - Danh từ ghép và chỉ loại: `con đường, con mắt, con dao, cô đơn, cô giáo, anh hùng, chú ý, bác sĩ, một mình, tự mình, chính mình, anh trai, chị gái, em út...`
-   - Phân loại đặc thù / lăng mạ trong game 18+: `cô thỏ, con đĩ, con khốn, con ranh, con điếm, thằng cha, thằng khốn...`
-   - Chuẩn hóa hai chiều C28: So khớp thông qua góc nhìn `NFKC + casefold`, nhưng báo cáo vi phạm và dữ liệu xuất luôn bảo tồn 100% dạng chuẩn `NFC` nguyên gốc.
+   - **Phân định từ đồng âm đa nghĩa (Disambiguation Filters):**
+     * `ba`: Nhận diện số từ khi đứng trước `NUMBER_CLASSIFIERS` (*ba người, ba đứa, ba quả, ba cái...*) hoặc đứng sau thứ bậc `ORDINAL_OR_RANK_PREV` (*anh ba, chú ba, thứ ba*), phân biệt tuyệt đối với đại từ xưng hô người cha (*ba ơi, ba đi làm*).
+     * `u`: Nhận diện danh từ đơn lẻ 1 ký tự, chỉ chấp nhận là đại từ xưng hô người mẹ khi đi liền với hạt hô ngữ/tình thái gia đình (*u ơi, con lạy u, u thương con*), triệt tiêu báo lỗi giả trên các danh từ bệnh lý/tâm lý (*u uất, u ám, khối u, u cục*).
+     * `bạn`: Nhận diện danh từ bạn bè khi đi sau phân loại từ (*người bạn, đứa bạn, nhóm bạn*) hoặc đi trước từ bổ nghĩa (*bạn cũ, bạn thân, bạn học*).
+     * `cháu nó / con nó / em nó`: Tự động miễn trừ khi đi liền với hậu tố *nó / hắn* trong ngữ cảnh nhắc đến người thứ ba vắng mặt.
+3. **Nhận diện Đại từ Phản thân & Cụm đại từ tập thể:**
+   - Cụm đại từ nhóm bao hàm (*anh em mình, chị em mình, chúng mình, cả nhà mình*) không bị bóc tách thành đại từ tự xưng đơn lẻ `mình`.
+   - Cụm phản thân tâm lý/thân thể (*tâm hồn mình, trái tim mình, tấm lòng mình, cơ thể mình, bản thân mình*) được nhận diện là phản thân sở hữu (*oneself / myself*), không bị gán lỗi tự xưng trái phép.
+4. **Thứ tự Ưu tiên Quy tắc (Precedence Architecture):**
+   - Bộ quy tắc ma trận 6 cấp (`best_rule`) được tra cứu trước để xác định đầy đủ tập đại từ tự xưng (`allowed_self`) và gọi đối phương (`allowed_call`).
+   - Rào chắn bảo vệ nhân vật giới tính chưa xác định (`Unknown-Gender Guardrail`): Chỉ kiểm tra các đại từ gọi trực tiếp người nghe; tự động miễn trừ đại từ tự xưng hợp lệ của người nói (ví dụ người anh xưng *"anh"* khi trò chuyện với em nhỏ có giới tính chưa xác định).
+5. **Đảm bảo Tuyệt đối Chuẩn hóa Unicode C28:**
+   - So khớp phân tích thông qua góc nhìn `NFKC + casefold`.
+   - Mọi chuỗi xuất báo cáo vi phạm (`target`, `source`, `evidence`) và tệp canonical luôn được chuẩn hóa nguyên vẹn 100% dạng chuẩn `NFC` byte-identical.
 
 ---
 
