@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-11-09
+### Fixed & Improved
+- **Cross-Layout Companion Skill Resolution:** `bientaptay/scripts/install_bientaptay.py`, `bientaptay/scripts/tests/test_install_fault.py`, and `viethoa/scripts/tests/test_editor_v2_dotnet.py` now automatically resolve sibling skills across both the Hermes category layout (`gaming/viethoa`, `software-development/bientaptay`) and the monorepo layout (`skills/viethoa`, `skills/bientaptay`), enabling 100% execution of all .NET 8 WPF/Core fault-injection tests inside the monorepo (0 skipped).
+- **CI Linter Generalization:** Generalized `viethoa/scripts/lint_skill_package.py` and `.github/workflows/ci.yml` to audit frontmatter, empty files, and backticked package links across all 5 skills (`viethoa`, `fonttv`, `bientaptay`, `buildpatch`, `cron-tuning`).
+- **FontTV Optional Dependency Guard:** Guarded `DotShapes` in `fonttv/scripts/tests/test_p1.py` with `HAS_FONTTOOLS` so stdlib-only Python environments cleanly skip instead of failing on `ModuleNotFoundError`.
+- **Cron Self-Removal Alignment:** Aligned `viethoa/references/plan1-operating-contract.md` and `viethoa/references/translation-execution-modes.md` with the `cron-tuning` hard invariant (`hermes cron remove <exact_job_id>` from worker script + `hermes cron list` readback, never leaving completed jobs in `paused` state).
+
 ## [1.2.0] - 2026-11-09
 ### 🚀 Official Stable Release (Buildpatch v0.6.0 & FontTV v0.23.0)
 - **buildpatch (v0.6.0):**

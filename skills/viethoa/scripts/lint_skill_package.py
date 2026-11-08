@@ -46,7 +46,7 @@ def main(root_arg: str) -> int:
             continue
         for target in binding_re.findall(body):
             linked.add(target)
-            if target not in rel:
+            if target not in rel and not (root / target.rstrip("/")).is_dir():
                 errors.append(
                     f"dangling package link in {path.relative_to(root).as_posix()}: {target}"
                 )
@@ -56,6 +56,21 @@ def main(root_arg: str) -> int:
         target = f"references/{name}"
         if target not in rel:
             errors.append(f"missing core reference: {target}")
+
+    # Core phrases and required paths below are viethoa-specific; skip when linting sibling skills.
+    if root.name != "viethoa":
+        report = {
+            "root": str(root),
+            "files": len(files),
+            "errors": errors,
+            "warnings": warnings,
+            "skill_bytes": skill.stat().st_size if skill.exists() else 0,
+            "skill_sha256": hashlib.sha256(skill.read_bytes()).hexdigest()
+            if skill.exists() else None,
+            "linked_package_paths": len(linked),
+        }
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        return 1 if errors else 0
 
     required = [
         "canonical", "stable key", "protected", "atomic", "runtime qa",
@@ -74,7 +89,8 @@ def main(root_arg: str) -> int:
         errors.append("generic external agent handoff script missing from core")
     if "scripts/plan1_safety_detector.py" not in core:
         errors.append("plan1 safety detector script missing from core")
-    retired = (root / "references/plan2-operating-contract.md").read_text(encoding="utf-8").lower()
+    plan2_path = root / "references/plan2-operating-contract.md"
+    retired = plan2_path.read_text(encoding="utf-8").lower() if plan2_path.is_file() else ""
     for phrase in (
         "english-policy audit", "preview_phase1_demo_not_final",
         "community-baseline route", "preview-grade draft",

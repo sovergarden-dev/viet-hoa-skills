@@ -50,7 +50,7 @@ The shortest route that still ships a verified installer. Do these, skip the res
 1. Freeze the manifest: supported build ID, executable SHA-256, every destination path, source/target size + SHA-256.
 2. Pick the payload: full + ZIP by default; consider verified `HDPATCH1` copy/literal delta for either same-size or size-changing files when measured savings justify it. Same-size sparse overwrite is a separate format.
 3. Run the project-owned sandbox harness against the packaged EXE (the skill does not ship `run_sandbox_tests.py`): clean install, hash readback, reinstall, uninstall, tampered refusal, unsupported-build refusal, forced-failure rollback, unrelated-file preservation.
-4. Validate layout and numerical DPI cases, then independently inspect the exact compiled GUI. The current helpers are partial checks, not release authorization; apply the evidence boundaries in `references/high-dpi-and-display-scaling-contract.md#evidence-boundaries`.
+4. Validate layout and numerical DPI cases (`python scripts/verify_installer_dpi_matrix.py <exe_path>`), then independently inspect the exact compiled GUI. The current helpers are partial checks, not release authorization; apply the evidence boundaries in `references/high-dpi-and-display-scaling-contract.md#evidence-boundaries`.
 5. Promote the exact EXE that passed both.
 
 Rule that must not be skipped: **the shipped EXE is the tested EXE.** Any rebuild — a colour, a

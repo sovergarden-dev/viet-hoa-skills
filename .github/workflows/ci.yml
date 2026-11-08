@@ -46,9 +46,11 @@ jobs:
         run: |
           python skills/fonttv/scripts/tests/test_custom_encoding_audit.py
 
-      - name: Lint viethoa Skill Package
+      - name: Lint All 5 Skill Packages
         run: |
-          python skills/viethoa/scripts/lint_skill_package.py skills/viethoa
+          for s in viethoa fonttv bientaptay buildpatch cron-tuning; do
+            python skills/viethoa/scripts/lint_skill_package.py "skills/$s"
+          done
 
   canary-runner:
     name: Canary Build (Latest Ubuntu Runner)

@@ -195,7 +195,11 @@ def main() -> None:
         die("bientaptay hiện dùng WPF và chỉ hỗ trợ Windows.")
     workspace = Path(args.workspace).expanduser().resolve()
     import runpy
-    validator = Path(__file__).resolve().parents[3] / "gaming/viethoa/scripts/validate_canonical_editor_handoff.py"
+    _val_candidates = (
+        Path(__file__).resolve().parents[3] / "gaming/viethoa/scripts/validate_canonical_editor_handoff.py",
+        Path(__file__).resolve().parents[2] / "viethoa/scripts/validate_canonical_editor_handoff.py",
+    )
+    validator = next((c for c in _val_candidates if c.is_file()), _val_candidates[0])
     if not validator.is_file():
         die("Missing viethoa handoff validator; install the companion skill.")
     validator_module = runpy.run_path(str(validator))

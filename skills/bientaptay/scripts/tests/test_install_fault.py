@@ -9,7 +9,11 @@ from pathlib import Path
 
 SKILL = Path(__file__).resolve().parents[2]
 INSTALLER = SKILL / "scripts" / "install_bientaptay.py"
-GENERATOR = SKILL.parents[1] / "gaming" / "viethoa" / "scripts" / "generate_canonical_editor_handoff.py"
+_GEN_CANDIDATES = (
+    SKILL.parents[1] / "gaming" / "viethoa" / "scripts" / "generate_canonical_editor_handoff.py",
+    SKILL.parent / "viethoa" / "scripts" / "generate_canonical_editor_handoff.py",
+)
+GENERATOR = next((c for c in _GEN_CANDIDATES if c.is_file()), _GEN_CANDIDATES[0])
 
 
 def sdk8() -> bool:

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import os
 import struct
@@ -13,6 +14,8 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image  # noqa: E402
+
+HAS_FONTTOOLS = importlib.util.find_spec("fontTools") is not None
 
 SCRIPTS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPTS))
@@ -83,7 +86,7 @@ class Repertoire(unittest.TestCase):
         self.assertTrue(all(not c.isascii() for c in rep))
 
 
-@unittest.skipUnless(NOTO.is_file() and ARIAL.is_file(), "system fonts not available")
+@unittest.skipUnless(HAS_FONTTOOLS and NOTO.is_file() and ARIAL.is_file(), "fontTools and system fonts not available")
 class DotShapes(unittest.TestCase):
     def test_round_font_dot_matches_period(self):
         s = p1_core.dot_shapes(NOTO)

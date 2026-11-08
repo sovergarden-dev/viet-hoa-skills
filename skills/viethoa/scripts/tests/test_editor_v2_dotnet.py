@@ -9,7 +9,11 @@ from pathlib import Path
 
 SCRIPT=Path(__file__).resolve().parents[1]/'editor_handoff_v2.py'
 SKILLS=SCRIPT.parents[3]
-CORE=SKILLS/'software-development/bientaptay/templates/bientaptay/src/BienTapTay.Core'
+_CORE_CANDIDATES=(
+    SKILLS/'software-development/bientaptay/templates/bientaptay/src/BienTapTay.Core',
+    SCRIPT.parents[2]/'bientaptay/templates/bientaptay/src/BienTapTay.Core',
+)
+CORE=next((c for c in _CORE_CANDIDATES if c.is_dir()), _CORE_CANDIDATES[0])
 
 @unittest.skipUnless(shutil.which('dotnet') and CORE.is_dir(),'dotnet and companion editor Core required')
 class DotnetBoundaryTests(unittest.TestCase):
