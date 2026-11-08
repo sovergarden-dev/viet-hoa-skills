@@ -135,3 +135,9 @@ Hai điều rút ra: (1) so với bản gốc Steam thì đắt, so với baseli
 - Chuỗi dài tràn khung khi font nguồn rộng hơn. Đo bằng tổng advance (§4).
 - Chữ nhỏ (cỡ ô ≤ 16 px): dấu chồng khó phân biệt ở bất kỳ font nào. Chọn font có x-height lớn và dấu gọn (Be Vietnam Pro, Noto Sans), kiểm ảnh zoom.
 - Font nguồn thiếu ký hiệu riêng của game → `preserved_ids`, không thay bằng glyph gần giống.
+
+
+### [CẢNH BÁO NGUY HIỂM: TextMeshPro Pre-baked SDF Glyph Collision]
+- **Tuyệt đối KHÔNG thay thế nhị phân TTF (`m_FontData`) của một Font Asset nếu Font đó đang được một TextMeshPro SDF Font Asset pre-baked tham chiếu.**
+- **Hậu quả:** Khi đổi TTF, FreeType sẽ cấp Glyph ID của font mới. Nếu Glyph ID của một ký tự mới (ví dụ số `1`) trùng với chỉ số đã bake sẵn của một ký tự khác trong atlas (ví dụ dấu chấm `.`), TMP sẽ tái sử dụng glyph cũ và **vẽ sai ký tự ngầm trên toàn bộ giao diện game (ví dụ mọi số `1` biến thành dấu chấm `.`)**.
+- **Giải pháp bắt buộc:** Giữ nguyên 100% TTF gốc, mở rộng ký tự tiếng Việt qua chuỗi Fallback (`m_FallbackFontAssetTable`) hoặc chuyển hướng con trỏ ngôn ngữ runtime (`UILanguageFontSettings`). Luôn chạy script kiểm tra `verify_tmp_glyph_map.py` trước khi đóng gói phát hành.

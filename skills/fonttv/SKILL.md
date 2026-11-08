@@ -1,7 +1,7 @@
 ---
 name: fonttv
 description: Use when Vietnamese text renders wrong in a font or atlas.
-version: 0.22.0
+version: 0.23.0
 contract_version: "1.0.0"
 author: Rurus, Hermes Agent
 license: MIT
@@ -28,13 +28,14 @@ Orchestrator cho lỗi font và typography tiếng Việt trong game/app. File n
 
 1. **Bản sao độc lập:** Thao tác trên bản sao staging; khóa root, build ID, engine/version, asset và SHA-256 input; có cơ chế rollback.
 2. **Encoding contract trước glyph:** Xác định dạng text tới font (Unicode codepoint, CP1252, VNI/TCVN3, single-byte custom, glyph index, atlas slot) trước khi kết luận font thiếu hay đủ.
-3. **Record tồn tại ≠ mapping đúng:** Coverage luôn bóc tách 5 cấp độ: `record_present`, `mapping_correct`, `outline_nonempty`, `metrics_valid`, `runtime_bound`.
-4. **Preserve có điều kiện:** Giữ nguyên glyph/record gốc chỉ khi identity ngữ nghĩa theo contract đã được chứng minh trên đúng bytes đó. Mọi slot sai trong custom encoding phải remap có kiểm soát.
-5. **Inventory consumer:** Kiểm kê mọi font consumer (menu, dialog, subtitle, nameplate, fallback); một màn hình hiển thị đúng không chứng minh font khác hoạt động đúng.
-6. **Chống lỗi lệch nét trong Unity TMP:** Tuyệt đối không dùng fallback font lệch trọng lượng nét gây lỗi rơi từng chữ có dấu (ransom-note fallback). Khởi tạo cặp Dynamic FontAsset tách biệt (Bold/Regular); đọc chi tiết tại `references/unity-tmp-fallback-and-weight-policy.md`.
-7. **Sửa đúng representation:** Sửa đúng tầng runtime thực tế (font file, FontAsset, atlas rect, sprite, cache, hoặc archive).
-8. **Bằng chứng cấu trúc không suy ra runtime:** Proof level tuân thủ `references/quality-gates.md`. Thước đo phát hành offline tối thiểu là mọi font ≥ `archive_verified` và `release_blockers` rỗng.
-9. **Minh bạch thông số:** Phân biệt phát hành game với trạng thái font offline. Mọi chứng nhận phát hành phải ghi rõ `build × platform × locale × cache × SHA-256`.
+3. **Decoder trước hiệu ứng:** Xác minh offset/pitch/format/orientation bằng glyph gốc giải mã đúng và kiểm thử độc lập trước khi sửa atlas. Không suy MSDF/MTSDF từ RGB nhiều màu khi decoder chưa được xác minh; không coi hàm đơn điệu hay giữ nguyên alpha là bảo đảm render. Xem `references/font-engineering-research.md` §6.6. Khởi động không crash không chứng minh độ nét hay glyph đúng.
+4. **Record tồn tại ≠ mapping đúng:** Coverage luôn bóc tách 5 cấp độ: `record_present`, `mapping_correct`, `outline_nonempty`, `metrics_valid`, `runtime_bound`.
+5. **Preserve có điều kiện:** Giữ nguyên glyph/record gốc chỉ khi identity ngữ nghĩa theo contract đã được chứng minh trên đúng bytes đó. Mọi slot sai trong custom encoding phải remap có kiểm soát.
+6. **Inventory consumer:** Kiểm kê mọi font consumer (menu, dialog, subtitle, nameplate, fallback); một màn hình hiển thị đúng không chứng minh font khác hoạt động đúng.
+7. **Chống lỗi lệch nét trong Unity TMP:** Tuyệt đối không dùng fallback font lệch trọng lượng nét gây lỗi rơi từng chữ có dấu (ransom-note fallback). Khởi tạo cặp Dynamic FontAsset tách biệt (Bold/Regular); đọc chi tiết tại `references/unity-tmp-fallback-and-weight-policy.md`.
+8. **Sửa đúng representation:** Sửa đúng tầng runtime thực tế (font file, FontAsset, atlas rect, sprite, cache, hoặc archive).
+9. **Bằng chứng cấu trúc không suy ra runtime:** Proof level tuân thủ `references/quality-gates.md`. Thước đo phát hành offline tối thiểu là mọi font ≥ `archive_verified` và `release_blockers` rỗng.
+10. **Minh bạch thông số:** Phân biệt phát hành game với trạng thái font offline. Mọi chứng nhận phát hành phải ghi rõ `build × platform × locale × cache × SHA-256`.
 
 ## Chọn Route
 

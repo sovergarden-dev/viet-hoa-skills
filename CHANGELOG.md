@@ -5,7 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.0] - 2026-11-09
+### 🚀 Official Stable Release (Buildpatch v0.6.0 & FontTV v0.23.0)
+- **buildpatch (v0.6.0):**
+  - Upgraded `templates/InstallerChassis.cs` to the v0.6.0 Production Chassis featuring Single Source of Truth (SSOT) layout geometry, mathematical PerMonitorV2 High-DPI scaling, dynamic `FontCache`, and automated self-probing layout verification.
+  - Updated `templates/installer-gui-layout.example.json` to the 8-control canonical dock specification (`folder`, `build`, `path`, `browse`, `uninstall`, `install`, `status`, `signature`).
+  - Added `references/high-dpi-and-display-scaling-contract.md` and `scripts/verify_installer_dpi_matrix.py` enforcing numerical DPI validation across scaling tuples (100%, 125%, 150%, 200%).
+  - Added `references/unity-tmp-font-and-glyph-integrity-contract.md` and `scripts/verify_tmp_glyph_map.py` enforcing the Unity TextMeshPro SDF glyph collision and Vietnamese coverage gate.
+- **fonttv (v0.23.0):**
+  - Added Rule #3 (*Decoder before effect*) in `SKILL.md` and expanded `references/font-engineering-research.md` with offline BC3 payload/trailer boundary verification rules.
+  - Added critical pre-baked TextMeshPro SDF glyph collision guardrails in `references/strategy-p1-replace.md`, mandating fallback FontAsset chains (`m_FallbackFontAssetTable`) or runtime `UILanguageFontSettings` redirection instead of raw `m_FontData` replacement.
+- **viethoa (v2.24.1):**
+  - Promoted `v1.1.1-rc.1` and `v1.1.1-rc.2` directional kinship disambiguation, token-window occurrence matching, and Ren'Py/TMP placeholder tag masking (`INTERPOLATION_TAG_PATTERN`) to stable.
+- **Local Hermes Agent Synchronization:**
+  - Synchronized all 5 skills (`viethoa`, `fonttv`, `bientaptay`, `buildpatch`, `cron-tuning`) 100% byte-for-byte (0 CRLF) between the monorepo and local Hermes Agent skills directory.
 
 ## [1.1.0] - 2026-10-12
 ### 🚀 Official Stable Release Promotion
@@ -17,8 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Negative Controls: 0 False Positives** across 52 paired controls (including NFD decomposed variants and rich-text tags).
   - **P0 Blockers: 0**.
 - **Audited & Approved:** Formally certified under Notion AI Red Team Round 4 verdict `SY07-R4-T6-PCDK-20261012-1BBC`.
-
-## [Unreleased]
 
 ## [1.1.1-rc.2] - 2026-10-13
 

@@ -98,7 +98,11 @@ Reference kỹ thuật tổng hợp từ ba nguồn nghiên cứu (§1). Không 
 ### 6.6 Custom engine (BMFont `.fnb` + MSDF/BC3)
 
 - Đọc shader (HLSL/DXIL) để biết MSDF, SDF hay bitmap trước khi đụng texture. Không vẽ bitmap thô lên MSDF: median contour tính sai, nét vỡ thành gai.
-- Không thay texture BC3 bừa bãi: texture đóng gói riêng có ràng buộc metadata/checksum/block alignment; nén lại qua DirectXTex/texconv từng gây crash `0xC0000005` hoặc opacity 0 làm mất toàn bộ chữ.
+- Không suy nguyên nhân crash/nhiễu từ công cụ nén: xác minh điểm bắt đầu/kết thúc payload, format, pitch và trường sau payload trước. Kích thước file đúng không chứng minh ranh giới đúng; header/trailer serialization không nhất thiết căn 4/16 byte.
+- Với tập 36 texture font Ravenswatch đã audit ngoại tuyến, hai trường kích thước ở offset 153/157 dẫn tới payload ở **161**, phần sau payload dài **39** bytes. Mốc **168/32** và **200/0** trước đây sai; dùng mốc 168 làm lệch pha BC3 7 bytes, giải mã thành nhiễu. Không áp mốc 161 cho mọi tài nguyên/build; adapter phải kiểm schema và từ chối ngoài phạm vi.
+- Với Fontin Sans donor Regular đã giải mã tại 161: toàn bộ RGB là trắng (255,255,255), alpha chứa nét chữ; Shadow chứa chi tiết RGB và alpha tương ứng. Đây không phải bằng chứng về RGB MSDF. Bộ giải mã alpha BC3 độc lập khớp Pillow chính xác trên donor Regular; ảnh glyph cắt theo FNB nhận dạng được. Shader runtime vẫn cần trace/capture nếu muốn kết luận cách lấy mẫu.
+- Trước mọi chỉnh sửa texture: (1) decode glyph gốc đúng, (2) ghép lại không biến đổi phải byte-identical, (3) decode/encode không hiệu ứng phải đo pixel/alpha loss và kiểm hiển thị, (4) một biến thể staging, (5) A/B runtime trên đúng hash do người dùng duyệt. Không thay file live, đóng gói phát hành hay ghi `user_verified_complete` cho candidate chưa được duyệt.
+- Tách kết quả tư vấn khỏi kiểm chứng nhị phân. Không biến các giả thuyết bị tư vấn bác bỏ (UV hard-code, alpha độc quyền, compressor ngoài không thể dùng) thành kết luận. Khi không có cửa sổ Notion mở sẵn, báo chưa có phản biện mới, không tự mở profile.
 - Bẫy Đ: font châu Âu hay vẽ Đ như Eth (`Ð`) có gạch rời hoặc padding âm làm chữ bay. Nếu `Ð` (U+00D0) của chính font liền nét và cùng `yoffset` với `D`, có thể trỏ `Đ` sang glyph đó; hoặc chỉnh bbox trong metrics mà không đụng texture nén.
 
 ## 7. Failure mode đã tái lập

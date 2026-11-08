@@ -6,13 +6,17 @@
     { "name": "faces", "x": 430, "y": 25, "w": 520, "h": 335 }
   ],
   "safe": [
-    { "name": "dock", "x": 556, "y": 400, "w": 444, "h": 166 }
+    { "name": "dock", "x": 552, "y": 384, "w": 456, "h": 180 }
   ],
   "controls": {
-    "uninstall": { "parent": "dock", "x": 18, "y": 109, "w": 116, "h": 36 },
-    "install": { "parent": "dock", "x": 142, "y": 109, "w": 284, "h": 37 },
-    "signature": { "parent": "dock", "x": 378, "y": 150, "w": 58, "h": 16 },
-    "build": { "parent": "dock", "x": 276, "y": 51, "w": 150, "h": 16 }
+    "folder": { "parent": "dock", "x": 18, "y": 14, "w": 170, "h": 20 },
+    "build": { "parent": "dock", "x": 206, "y": 14, "w": 232, "h": 20 },
+    "path": { "parent": "dock", "x": 18, "y": 38, "w": 314, "h": 30 },
+    "browse": { "parent": "dock", "x": 338, "y": 37, "w": 100, "h": 32 },
+    "uninstall": { "parent": "dock", "x": 18, "y": 78, "w": 120, "h": 40 },
+    "install": { "parent": "dock", "x": 146, "y": 78, "w": 292, "h": 40 },
+    "status": { "parent": "dock", "x": 18, "y": 130, "w": 280, "h": 28 },
+    "signature": { "parent": "dock", "x": 374, "y": 132, "w": 66, "h": 24 }
   },
   "locked": {
     "rainbow_phase": 0.045,

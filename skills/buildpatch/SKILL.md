@@ -1,7 +1,7 @@
 ---
 name: buildpatch
 description: Build and verify transactional Windows patch installers.
-version: 0.5.1
+version: 0.6.0
 contract_version: "1.0.0"
 author: Rurus, Hermes Agent
 license: MIT
@@ -50,7 +50,7 @@ The shortest route that still ships a verified installer. Do these, skip the res
 1. Freeze the manifest: supported build ID, executable SHA-256, every destination path, source/target size + SHA-256.
 2. Pick the payload: full + ZIP by default; consider verified `HDPATCH1` copy/literal delta for either same-size or size-changing files when measured savings justify it. Same-size sparse overwrite is a separate format.
 3. Run the project-owned sandbox harness against the packaged EXE (the skill does not ship `run_sandbox_tests.py`): clean install, hash readback, reinstall, uninstall, tampered refusal, unsupported-build refusal, forced-failure rollback, unrelated-file preservation.
-4. Screenshot the compiled GUI and pass the layout gate.
+4. Validate layout and numerical DPI cases, then independently inspect the exact compiled GUI. The current helpers are partial checks, not release authorization; apply the evidence boundaries in `references/high-dpi-and-display-scaling-contract.md#evidence-boundaries`.
 5. Promote the exact EXE that passed both.
 
 Rule that must not be skipped: **the shipped EXE is the tested EXE.** Any rebuild — a colour, a
@@ -134,6 +134,7 @@ Release is complete only when:
 
 - all source/target/payload hashes match the frozen manifest;
 - exact packaged-EXE sandbox install/reinstall/uninstall/refusal/rollback tests pass;
+- all required numerical DPI tuples pass and real GUI evidence is bound to the exact published EXE; untested display environments remain NOT TESTED;
 - final EXE contains no local/debug/community-reference paths;
 - the installer target hashes equal the game-runtime-accepted hashes;
 - final EXE SHA-256 and size are recorded.
@@ -141,3 +142,7 @@ Release is complete only when:
 ## Phạm vi kiểm lại
 
 Docs-only: kiểm contract/link và test helper bị ảnh hưởng; không rebuild/reinstall dự án. Tái dùng evidence chỉ khi input/output hashes, tool/config, build, scope và loại proof khớp. Không gọi skip là PASS. Thay artifact thì kiểm lại gate phụ thuộc; riêng installer EXE đổi byte phải chạy lại exact-EXE suite.
+
+
+### Unity TextMeshPro Quality Gate
+- **Unity TMP Glyph Collision Gate**: Đối với game Unity dùng TextMeshPro, bắt buộc chạy `verify_tmp_glyph_map.py` kiểm tra mọi asset SDF. Đảm bảo zero glyph collision trên các ký tự ASCII (chữ số, dấu câu) và 100% độ phủ tiếng Việt qua chuỗi Fallback. Đọc chi tiết tại `references/unity-tmp-font-and-glyph-integrity-contract.md`.
