@@ -79,7 +79,7 @@ git clone https://github.com/sovergarden-dev/viet-hoa-skills.git ~/.hermes/skill
 
 ### Cài đặt Từng Skill Riêng lẻ (Standalone)
 
-Để cài riêng `viethoa`, tải [viethoa-v1.1.0.zip](https://github.com/sovergarden-dev/viet-hoa-skills/releases/download/v1.1.0/viethoa-v1.1.0.zip) rồi giải nén nội dung vào thư mục `skills/viethoa/` của profile Hermes đang dùng. Với profile mặc định, bạn sẽ thấy `~/.hermes/skills/viethoa/SKILL.md` sau khi giải nén.
+Để cài riêng `viethoa`, tải [viethoa-v1.2.1.zip](https://github.com/sovergarden-dev/viet-hoa-skills/releases/download/v1.2.1/viethoa-v1.2.1.zip) rồi giải nén nội dung vào thư mục `skills/viethoa/` của profile Hermes đang dùng. Với profile mặc định, tệp `SKILL.md` nằm ở `%LOCALAPPDATA%\hermes\skills\viethoa\SKILL.md` trên Windows hoặc `~/.hermes/skills/viethoa/SKILL.md` trên Linux và macOS.
 
 Mỗi skill trong thư mục `skills/` đã được tích hợp sẵn cơ chế **Hermetic Vendoring** (`tools/vendor_shared.py`), chứa đầy đủ hợp đồng tại `references/contracts/` và thư viện tại `scripts/_vendor/`. Do đó, người dùng có thể sao chép hoặc cài đặt từng skill độc lập mà không lo gãy dependency:
 ```bash
